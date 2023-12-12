@@ -25,7 +25,6 @@ app.use(express.json());
 
 app.get("/users", async (req, res) => {
   const users = await User.findAll();
-  
   res.send([users]);
 });
 

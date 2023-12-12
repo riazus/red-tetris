@@ -22,7 +22,7 @@ front:
 	$(DOCKER) -f $(DEV_COMPOSE_FILE) up --build $(OPTIONS) frontend
 
 back:
-	$(DOCKER) -f $(DEV_COMPOSE_FILE) up --build $(OPTIONS) backend db
+	$(DOCKER) -f $(DEV_COMPOSE_FILE) up --build $(OPTIONS) backend
 
 clean:
 	$(DOCKER) -f $(DEV_COMPOSE_FILE) down

@@ -13,6 +13,8 @@ services:
       BACKEND_PORT: ${BACKEND_PORT}
     ports:
       - ${BACKEND_PORT}:${BACKEND_PORT}
+    volumes:
+      - ./src/backend/src:/usr/src/app/src
     networks:
       - redtetris-network
     restart: unless-stopped
