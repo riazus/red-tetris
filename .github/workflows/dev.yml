@@ -28,6 +28,6 @@ jobs:
 
       - name: Frontend checking
         run: cd ./src/frontend 
-      - run: npm ci
+      - run: npm i
       - run: npm run test
 
