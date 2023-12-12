@@ -27,4 +27,4 @@ jobs:
           cache: "npm"
 
       - name: Run containers
-        run: make dev
+        run: make tests

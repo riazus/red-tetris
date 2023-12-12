@@ -30,6 +30,9 @@ clean:
 fclean: clean
 	$(DOCKER) -f $(DEV_COMPOSE_FILE) down --rmi all --volumes --remove-orphans
 
+tests:
+	cd ./src/frontend && npm run test
+
 clean-docker:
 	docker system prune
 	docker volume prune

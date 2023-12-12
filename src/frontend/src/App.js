@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import { useCreateUserMutation, useGetUsersQuery } from "./app/api/api";
+import CreateUserInput from "./containers/CreateUserInput/CreateUserInput";
 
 function App() {
   const { data: usersData, isLoading, isError, isSuccess } = useGetUsersQuery();
   const [createUser, {}] = useCreateUserMutation();
-  const [username, setUsername] = useState("");
-  const [score, setScore] = useState(0);
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -15,10 +14,10 @@ function App() {
     }
   }, [isLoading]);
 
-  const onNewUserCreate = async (e) => {
+  const onNewUserCreate = async (e, newUser) => {
     e.preventDefault();
-    setUsers((prev) => [...prev, { username, score }]);
-    await createUser({ username, score });
+    setUsers((prev) => [...prev, newUser]);
+    await createUser(newUser);
   };
 
   return (
@@ -38,18 +37,7 @@ function App() {
           </>
         )
       )}
-      <form onSubmit={onNewUserCreate}>
-        <input
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        ></input>
-        <input
-          value={score}
-          type="number"
-          onChange={(e) => setScore(e.target.value)}
-        ></input>
-        <button>Create!</button>
-      </form>
+      <CreateUserInput onNewUserCreate={onNewUserCreate} />
     </div>
   );
 }
