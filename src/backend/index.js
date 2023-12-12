@@ -21,9 +21,19 @@ const io = socketio(server, {
 });
 
 app.use(cors());
+app.use(express.json());
+
 app.get("/users", async (req, res) => {
-  const test = await User.findAll();
-  res.send(test);
+  const users = await User.findAll();
+  
+  res.send([users]);
+});
+
+app.post("/users", async (req, res) => {
+  const { username, score } = req.body;
+  await User.create({ username, score });
+  res.statusCode = 201;
+  return res;
 });
 
 server.listen(PORT, async () => {
