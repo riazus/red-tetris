@@ -25,14 +25,36 @@ app.use(express.json());
 
 app.get("/users", async (req, res) => {
   const users = await User.findAll();
-  res.send([users]);
+  res.send(users);
+});
+
+app.get("/username-valid", async (req, res) => {
+  let response = { isNameValid: true };
+
+  const nameToCheck = req.query["name"];
+  if (!nameToCheck) {
+    res.status(400).send({ message: "Username not provided" });
+  }
+
+  const findUser = await User.findOne({ where: { username: nameToCheck } });
+  if (findUser) {
+    response.isNameValid = false;
+  }
+
+  res.send(response);
 });
 
 app.post("/users", async (req, res) => {
   const { username, score } = req.body;
-  await User.create({ username, score });
-  res.statusCode = 201;
-  return res;
+
+  const findUser = await User.findOne({ where: { username } });
+
+  if (findUser) {
+    res.status(400).send({ message: "User with this name already exists" });
+  } else {
+    await User.create({ username, score });
+    res.sendStatus(201);
+  }
 });
 
 server.listen(PORT, async () => {
