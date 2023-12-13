@@ -40,9 +40,6 @@ services:
       - redtetris-network
     restart: unless-stopped
 
-volumes:
-  dbdata:
-
 networks:
   redtetris-network:
     driver: bridge
