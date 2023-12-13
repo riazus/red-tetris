@@ -1,44 +1,22 @@
-import React, { useEffect, useState } from "react";
 import "./App.css";
-import { useCreateUserMutation, useGetUsersQuery } from "./app/api/api";
-import CreateUserInput from "./containers/CreateUserInput/CreateUserInput";
+import HashRouter from "./components/HashRouter";
+import Home from "./containers/Home/Home";
+import Leaderboard from "./containers/Leaderboard/Leaderboard";
 
 function App() {
-  const { data: usersData, isLoading, isError, isSuccess } = useGetUsersQuery();
-  const [createUser, {}] = useCreateUserMutation();
-  const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      setUsers(...usersData);
+  const router = [
+    {
+      href: "",
+      element: <Home />
+    },
+    {
+      href: "leaderboard",
+      element: <Leaderboard />
     }
-  }, [isLoading]);
-
-  const onNewUserCreate = async (e, newUser) => {
-    e.preventDefault();
-    setUsers((prev) => [...prev, newUser]);
-    await createUser(newUser);
-  };
+  ];
 
   return (
-    <div>
-      {isLoading ? (
-        <h1>Loading...</h1>
-      ) : isError ? (
-        <h1>Error occured</h1>
-      ) : (
-        isSuccess && (
-          <>
-            <h1>Hello world</h1>
-            {users &&
-              users.map((user, ind) => {
-                return <p key={ind}>{user.username}</p>;
-              })}
-          </>
-        )
-      )}
-      <CreateUserInput onNewUserCreate={onNewUserCreate} />
-    </div>
+    <HashRouter router={router} />
   );
 }
 
