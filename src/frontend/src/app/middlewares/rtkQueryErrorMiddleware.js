@@ -2,8 +2,6 @@ import { isRejectedWithValue } from "@reduxjs/toolkit";
 
 export const rtkQueryErrorMiddleware = (api) => (next) => async (action) => {
   if (isRejectedWithValue(action)) {
-    // TODO: Global handler for errors from RTK Q
-
     let message = "";
 
     if (action.payload.status) {

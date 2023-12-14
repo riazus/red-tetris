@@ -13,8 +13,7 @@ function Home() {
         <UsernameForm />
       ) : (
         <>
-          {" "}
-          <h2>Hello, {username}</h2>{" "}
+          <h2>Hello, {username}</h2>
           <Link to="#leaderboard">Link to Leaderboard</Link>
         </>
       )}
