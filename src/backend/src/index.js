@@ -8,20 +8,32 @@ const PORT = process.env.BACKEND_PORT || 5000;
 
 const app = express();
 const server = http.createServer(app);
-let rooms = [];
-let players = [];
-
-const io = socketio(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Authorization"],
+let rooms = [
+  {
+    id: 1,
+    players: [], // Users
   },
-  path: "/socket",
-});
+  {
+    id: 2,
+    players: [], // Users
+  },
+  {
+    id: 3,
+    players: [], // Users
+  },
+  {
+    id: 4,
+    players: [], // Users
+  },
+];
+let players = [];
 
 app.use(cors());
 app.use(express.json());
+
+app.get("/rooms", (req, res) => {
+  res.send(rooms);
+});
 
 app.get("/users", async (req, res) => {
   const users = await User.findAll();

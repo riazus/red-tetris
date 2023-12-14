@@ -30,7 +30,7 @@ clean:
 fclean: clean
 	$(DOCKER) -f $(DEV_COMPOSE_FILE) down --rmi all --volumes --remove-orphans
 
-tests:
+test:
 	cd ./src/frontend && npm run test
 
 clean-docker:
