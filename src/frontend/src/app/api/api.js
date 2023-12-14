@@ -10,8 +10,9 @@ const baseQuery = fetchBaseQuery({
 export const api = createApi({
   baseQuery,
   endpoints: (builder) => ({
-    getUsers: builder.query({
-      query: () => ({ url: "users" }),
+    getUsers: builder.query({ query: () => ({ url: "users" }) }),
+    checkIfNameValid: builder.mutation({
+      query: (name) => ({ url: `username-valid?name=${name}` }),
     }),
     createUser: builder.mutation({
       query: (body) => ({
@@ -23,4 +24,8 @@ export const api = createApi({
   }),
 });
 
-export const { useGetUsersQuery, useCreateUserMutation } = api;
+export const {
+  useGetUsersQuery,
+  useCreateUserMutation,
+  useCheckIfNameValidMutation,
+} = api;
