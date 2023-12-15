@@ -218,7 +218,7 @@ io.on("connection", async (socket) => {
       Game.removePlayer(player.socketId, room);
 
       if (room.players.length === 0) {
-        Game.removeRoom(roomName);
+        Game.removeRoom(room.name);
       } else {
         room.players[0].isAdmin = true;
         // Send players and room info when player left
