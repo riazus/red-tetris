@@ -1,4 +1,5 @@
-const { rooms } = require("./Room");
+const { players } = require("./Player");
+const { rooms, Room } = require("./Room");
 
 class Game {
   name;
@@ -25,6 +26,21 @@ class Game {
       rooms.splice(index, 1);
       return true;
     }
+    return false;
+  }
+
+  static removePlayer(socketId, room) {
+    const index = room.players.findIndex(
+      (player) => player.socketId === socketId
+    ); // player's index in room.players[]
+    const index2 = players.findIndex((player) => player.socketId === socketId); // player's index in const players[]
+
+    if (index !== -1 && index2 !== -1) {
+      room.players.splice(index, 1);
+      players.splice(index2, 1);
+      return true;
+    }
+
     return false;
   }
 }

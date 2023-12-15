@@ -25,6 +25,21 @@ class Player {
   static getByName(username) {
     return players.find((player) => player.username === username);
   }
+
+  static getBySocketId(socketId) {
+    return players.find((player) => player.socketId === socketId);
+  }
+
+  static deletePlayer(socketId) {
+    const index = players.findIndex((player) => player.socketId === socketId);
+
+    if (index !== -1) {
+      players.splice(index, 1);
+      return true;
+    }
+
+    return false;
+  }
 }
 
 module.exports = { players, Player };

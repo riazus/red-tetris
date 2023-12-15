@@ -89,6 +89,18 @@ const errorHandler = (socket, message) => {
   socket.emit(SOCKETS.ON_ERROR, { message });
 };
 
+const playerLeft = (player, socket, io) => {
+  if (!player) return;
+  const room = Room.getByName(player.roomName);
+  if (!room) {
+    Player.deletePlayer(player.socketId);
+  } else {
+    socket.leave(room.name);
+    Game.removePlayer(player.socketId);
+    console.log("On player", player.username, "leave room:", room.name);
+  }
+};
+
 io.on("connection", async (socket) => {
   socket.use((packet, next) => {
     next();
@@ -103,7 +115,12 @@ io.on("connection", async (socket) => {
     );
 
     if (!isUsernameInvalid) {
-      console.log("Create new player with username", username);
+      console.log(
+        "Create new player with username",
+        username,
+        "and socket",
+        socket.id
+      );
       new Player(socket.id, username);
     }
 
@@ -145,10 +162,11 @@ io.on("connection", async (socket) => {
 
     room.addPlayer(player);
     if (room.players.length === 1) player.isAdmin = true;
-    console.log("Player joined to the room", player.username);
 
     socket.join(room.name);
-    console.log(`Socket ${socket.id} joined ${room.name}`);
+    console.log(
+      `Player ${username} with socket ${socket.id} joined ${room.name} room`
+    );
 
     // Send players and room info when new player joins
     io.to(room.name).emit(SOCKETS.UPDATE_ROOM_PLAYERS, {
@@ -166,9 +184,9 @@ io.on("connection", async (socket) => {
 
     if (!exitRoomArgsValid(room, player)) return;
 
-    room.players = [
-      ...room.players.filter((player) => player.username !== username),
-    ];
+    console.log("On player", player.username, "leave room:", room.name);
+
+    room.removePlayer(username);
 
     if (player.isAdmin) {
       player.isAdmin = false;
@@ -180,7 +198,7 @@ io.on("connection", async (socket) => {
       Game.removeRoom(roomName);
     } else {
       room.players[0].isAdmin = true;
-      // Send players and room info when new player joins
+      // Send players and room info when player left
       io.to(room.name).emit(SOCKETS.UPDATE_ROOM_PLAYERS, {
         room: room.name,
         players: room.players,
@@ -189,7 +207,29 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("Client Disconnected", socket.handshake.headers.host);
+    const player = Player.getBySocketId(socket.id);
+    if (!player) return;
+
+    const room = Room.getByName(player.roomName);
+    if (!room) {
+      Player.deletePlayer(player.socketId);
+    } else {
+      socket.leave(room.name);
+      Game.removePlayer(player.socketId, room);
+
+      if (room.players.length === 0) {
+        Game.removeRoom(roomName);
+      } else {
+        room.players[0].isAdmin = true;
+        // Send players and room info when player left
+        io.to(room.name).emit(SOCKETS.UPDATE_ROOM_PLAYERS, {
+          room: room.name,
+          players: room.players,
+        });
+      }
+    }
+
+    console.log("On player", player.username, "leave game");
   });
 });
 

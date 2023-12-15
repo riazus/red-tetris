@@ -21,12 +21,10 @@ class Room {
     this.players.push(player);
   }
 
-  static create(roomName) {
-    if (rooms.some((room) => name === roomName)) {
-      return;
-    }
-
-    return new Room(roomName);
+  removePlayer(username) {
+    this.players = [
+      ...this.players.filter((player) => player.username !== username),
+    ];
   }
 
   static getByName(roomName) {
