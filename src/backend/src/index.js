@@ -59,11 +59,41 @@ const exitRoomArgsValid = (room, player) => {
   return (
     player &&
     room &&
-    room.players.some((item) => item.username === player.username)
+    room.players.some((item) => item.username === player.username) // player must be in room
   );
 };
 
+const enterRoomArgsValid = (room, player) => {
+  if (!player || !room) {
+    return false;
+  }
+
+  const isPlayerAlreadyInRoom = room.players.some(
+    (item) => item.username === player.username
+  );
+
+  if (isPlayerAlreadyInRoom) {
+    // Player must not be in the room
+    return false;
+  }
+
+  if (room.isSolo) {
+    // Room must be solo, and there should be exactly one player
+    return room.players.length === 0;
+  }
+
+  return true;
+};
+
+const errorHandler = (socket, message) => {
+  socket.emit(SOCKETS.ON_ERROR, { message });
+};
+
 io.on("connection", async (socket) => {
+  socket.use((packet, next) => {
+    next();
+  });
+
   /**
    * Create user
    */
@@ -84,8 +114,15 @@ io.on("connection", async (socket) => {
    * Create new room
    */
   socket.on(SOCKETS.CREATE_ROOM, ({ roomName, isSolo }) => {
+    if (!players.some((player) => player.socketId === socket.id)) {
+      errorHandler(
+        socket,
+        "Seems you not chose the username, please refresh the page"
+      );
+      return;
+    }
+
     if (Room.anyByName(roomName)) {
-      res.status(400).send({ message: "This room name already in use" });
       sendResponseAfterCreateRoom(
         socket,
         false,
@@ -104,9 +141,10 @@ io.on("connection", async (socket) => {
   socket.on(SOCKETS.ENTER_ROOM, ({ username, roomName }) => {
     const player = Player.getByName(username);
     const room = Room.getByName(roomName);
-    if (!player || !room) return;
+    if (!enterRoomArgsValid(room, player)) return;
 
     room.addPlayer(player);
+    if (room.players.length === 1) player.isAdmin = true;
     console.log("Player joined to the room", player.username);
 
     socket.join(room.name);
@@ -132,9 +170,16 @@ io.on("connection", async (socket) => {
       ...room.players.filter((player) => player.username !== username),
     ];
 
+    if (player.isAdmin) {
+      player.isAdmin = false;
+    }
+
+    socket.leave(room.name);
+
     if (room.players.length === 0) {
       Game.removeRoom(roomName);
     } else {
+      room.players[0].isAdmin = true;
       // Send players and room info when new player joins
       io.to(room.name).emit(SOCKETS.UPDATE_ROOM_PLAYERS, {
         room: room.name,
@@ -144,7 +189,7 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("Client Disconnected", socket.handshake.headers.origin);
+    console.log("Client Disconnected", socket.handshake.headers.host);
   });
 });
 

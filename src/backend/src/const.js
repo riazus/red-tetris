@@ -7,6 +7,7 @@ const SOCKETS = {
   CREATE_ROOM_RESPONSE: "create_room_response",
   UPDATE_WAITING_ROOMS: "update_waiting_rooms",
   EXIT_ROOM: "exit_room",
+  ON_ERROR: "on_error",
 };
 
 module.exports = { SOCKETS };
