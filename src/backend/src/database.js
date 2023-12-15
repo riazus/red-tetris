@@ -6,7 +6,7 @@ const sequelize = new Sequelize({
   logging: false,
 });
 
-const User = sequelize.define("User", {
+const Leaderboard = sequelize.define("Leaderboard", {
   username: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -25,4 +25,4 @@ const initDB = async () => {
   console.log("All models were synchronized successfully.");
 };
 
-module.exports = { initDB, User };
+module.exports = { initDB, Leaderboard };
