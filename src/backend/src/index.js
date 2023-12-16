@@ -7,6 +7,11 @@ const { SOCKETS } = require("./const.js");
 const { Player, players } = require("./models/Player.js");
 const { Room, rooms } = require("./models/Room.js");
 const { Game } = require("./models/Game.js");
+const {
+  createRoomArgsValid,
+  enterRoomArgsValid,
+  exitRoomArgsValid,
+} = require("./helpers/socketValidators.js");
 
 const PORT = process.env.BACKEND_PORT || 5000;
 
@@ -55,57 +60,7 @@ const sendResponseAfterCreateRoom = (socket, isSucces, message) => {
   socket.emit(SOCKETS.CREATE_ROOM_RESPONSE, { isSucces, message });
 };
 
-const exitRoomArgsValid = (room, player) => {
-  return (
-    player &&
-    room &&
-    room.players.some((item) => item.username === player.username) // player must be in room
-  );
-};
-
-const enterRoomArgsValid = (room, player) => {
-  if (!player || !room) {
-    return false;
-  }
-
-  const isPlayerAlreadyInRoom = room.players.some(
-    (item) => item.username === player.username
-  );
-
-  if (isPlayerAlreadyInRoom) {
-    // Player must not be in the room
-    return false;
-  }
-
-  if (room.isSolo) {
-    // Room must be solo, and there should be exactly one player
-    return room.players.length === 0;
-  }
-
-  return true;
-};
-
-const errorHandler = (socket, message) => {
-  socket.emit(SOCKETS.ON_ERROR, { message });
-};
-
-const playerLeft = (player, socket, io) => {
-  if (!player) return;
-  const room = Room.getByName(player.roomName);
-  if (!room) {
-    Player.deletePlayer(player.socketId);
-  } else {
-    socket.leave(room.name);
-    Game.removePlayer(player.socketId);
-    console.log("On player", player.username, "leave room:", room.name);
-  }
-};
-
 io.on("connection", async (socket) => {
-  socket.use((packet, next) => {
-    next();
-  });
-
   /**
    * Create user
    */
@@ -131,25 +86,14 @@ io.on("connection", async (socket) => {
    * Create new room
    */
   socket.on(SOCKETS.CREATE_ROOM, ({ roomName, isSolo }) => {
-    if (!players.some((player) => player.socketId === socket.id)) {
-      errorHandler(
-        socket,
-        "Seems you not chose the username, please refresh the page"
-      );
-      return;
-    }
+    const { valid, message } = createRoomArgsValid(socket, roomName);
 
-    if (Room.anyByName(roomName)) {
-      sendResponseAfterCreateRoom(
-        socket,
-        false,
-        "This room name already in use"
-      );
-    } else {
+    if (valid) {
       new Room(roomName, isSolo);
       updateWaitingRooms(socket);
-      sendResponseAfterCreateRoom(socket, true);
     }
+
+    sendResponseAfterCreateRoom(socket, valid, message);
   });
 
   /**
