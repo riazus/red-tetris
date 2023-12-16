@@ -1,31 +1,31 @@
-const express = require("express");
-const socketio = require("socket.io");
-const http = require("http");
-const cors = require("cors");
-const { initDB, Leaderboard } = require("./database.js");
-const { SOCKETS } = require("./const.js");
-const { Player, players } = require("./models/Player.js");
-const { Room, rooms } = require("./models/Room.js");
-const { Game } = require("./models/Game.js");
-const {
+import express, { json } from "express";
+import { Server } from "socket.io";
+import { createServer } from "http";
+import cors from "cors";
+import { initDB, Leaderboard } from "./database.js";
+import { SOCKETS } from "./const.js";
+import { Player, players } from "./models/Player.js";
+import { Room, rooms } from "./models/Room.js";
+import { Game } from "./models/Game.js";
+import {
   createRoomArgsValid,
   enterRoomArgsValid,
   exitRoomArgsValid,
-} = require("./helpers/socketValidators.js");
+} from "./helpers/socketValidators.js";
 
 const PORT = process.env.BACKEND_PORT || 5000;
 
 const app = express();
-const server = http.createServer(app);
+const server = createServer(app);
 
 app.use(cors());
-app.use(express.json());
+app.use(json());
 
-app.get("/rooms", (req, res) => {
+app.get("/rooms", (_, res) => {
   res.send(rooms.filter((room) => !room.isSolo));
 });
 
-app.get("/leaderboard", async (req, res) => {
+app.get("/leaderboard", async (_, res) => {
   const users = await Leaderboard.findAll();
   res.send(users);
 });
@@ -43,7 +43,7 @@ app.post("/leaderboard", async (req, res) => {
   }
 });
 
-const io = socketio(server, {
+const io = new Server(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],

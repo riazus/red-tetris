@@ -1,5 +1,5 @@
-const { players } = require("../models/Player");
-const { rooms, Room } = require("../models/Room");
+import { players } from "../models/Player.js";
+import { rooms, Room } from "../models/Room.js";
 
 const createRoomArgsValid = (socket, roomName) => {
   let valid = false;
@@ -52,4 +52,4 @@ const playerAlreadyInRoom = (socketId) => {
   );
 };
 
-module.exports = { createRoomArgsValid, enterRoomArgsValid, exitRoomArgsValid };
+export { createRoomArgsValid, enterRoomArgsValid, exitRoomArgsValid };

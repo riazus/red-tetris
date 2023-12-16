@@ -10,4 +10,4 @@ const SOCKETS = {
   ON_ERROR: "on_error",
 };
 
-module.exports = { SOCKETS };
+export { SOCKETS };

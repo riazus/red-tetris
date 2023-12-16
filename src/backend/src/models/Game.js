@@ -1,5 +1,5 @@
-const { players } = require("./Player");
-const { rooms, Room } = require("./Room");
+import { players } from "./Player.js";
+import { rooms } from "./Room.js";
 
 class Game {
   name;
@@ -45,4 +45,4 @@ class Game {
   }
 }
 
-module.exports = { Game };
+export { Game };

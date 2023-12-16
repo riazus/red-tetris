@@ -36,4 +36,4 @@ class Room {
   }
 }
 
-module.exports = { rooms, Room };
+export { rooms, Room };
