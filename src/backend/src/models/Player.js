@@ -20,6 +20,7 @@ class Player {
 
   addRoomName(roomName) {
     this.roomName = roomName;
+    return this;
   }
 
   static getByName(username) {

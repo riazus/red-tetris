@@ -10,7 +10,7 @@ class Game {
 
   static getWaitingRooms() {
     return rooms.filter(
-      (room) => !room.gameStarted && !room.gameover && room.name !== "solo"
+      (room) => !room.gameStarted && !room.gameover && !room.isSolo
     );
   }
 
@@ -29,6 +29,7 @@ class Game {
     return false;
   }
 
+  // removes player only if he exists in the room
   static removePlayer(socketId, room) {
     const index = room.players.findIndex(
       (player) => player.socketId === socketId
