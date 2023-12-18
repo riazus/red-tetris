@@ -11,6 +11,7 @@ import {
   createRoomArgsValid,
   enterRoomArgsValid,
   exitRoomArgsValid,
+  startGameArgsValid,
 } from "./helpers/socketValidators.js";
 
 const PORT = process.env.BACKEND_PORT || 5000;

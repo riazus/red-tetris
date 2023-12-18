@@ -46,10 +46,22 @@ const enterRoomArgsValid = (room, player) => {
   return true;
 };
 
+const startGameArgsValid = (room, player) => {
+  if (!room || !player) return false;
+  if (!player.isAdmin) return false;
+
+  return true;
+};
+
 const playerAlreadyInRoom = (socketId) => {
   return rooms.some((room) =>
     room.players.some((player) => player.socketId === socketId)
   );
 };
 
-export { createRoomArgsValid, enterRoomArgsValid, exitRoomArgsValid };
+export {
+  createRoomArgsValid,
+  enterRoomArgsValid,
+  exitRoomArgsValid,
+  startGameArgsValid,
+};
