@@ -150,6 +150,31 @@ io.on("connection", async (socket) => {
     }
   });
 
+  /**
+   * Start game
+   */
+  socket.on(SOCKETS.START_GAME, ({ username, roomName }) => {
+    const player = Player.getByName(username);
+    const room = Room.getByName(roomName);
+
+    if (!startGameArgsValid(room, player)) return;
+
+    room.gameStarted = true;
+
+    // Send to the players that game started
+    io.to(room.name).emit(SOCKETS.GAME_STARTED);
+  });
+
+  /**
+   * Restart game
+   */
+  socket.on(SOCKETS.RESTART_GAME, ({ roomName }) => {});
+
+  /**
+   * End game
+   */
+  socket.on(SOCKETS.END_GAME, ({ roomName }) => {});
+
   socket.on("disconnect", () => {
     const player = Player.getBySocketId(socket.id);
     if (!player) return;

@@ -8,6 +8,10 @@ const SOCKETS = {
   UPDATE_WAITING_ROOMS: "update_waiting_rooms",
   EXIT_ROOM: "exit_room",
   ON_ERROR: "on_error",
+  START_GAME: "start_game",
+  RESTART_GAME: "restart_game",
+  END_GAME: "end_game",
+  GAME_STARTED: "game_started",
 };
 
 export { SOCKETS };
