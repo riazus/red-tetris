@@ -24,6 +24,7 @@ class Game {
 
     if (index !== -1) {
       rooms.splice(index, 1);
+      console.log(`Room ${roomName} was deleted`);
       return true;
     }
     return false;

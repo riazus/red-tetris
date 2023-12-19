@@ -9,9 +9,11 @@ const SOCKETS = {
   EXIT_ROOM: "exit_room",
   ON_ERROR: "on_error",
   START_GAME: "start_game",
-  RESTART_GAME: "restart_game",
-  END_GAME: "end_game",
+  GAMEOVER: "gameover",
+  UPDATE_SPECTER: "update_specter",
+  UPDATE_SCORE: "update_score",
   GAME_STARTED: "game_started",
+  RESTART_GAME: "restart_game",
 };
 
 export { SOCKETS };

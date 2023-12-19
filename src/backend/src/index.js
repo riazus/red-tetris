@@ -11,7 +11,11 @@ import {
   createRoomArgsValid,
   enterRoomArgsValid,
   exitRoomArgsValid,
+  gameoverArgsValid,
+  restartGameArgsValid,
   startGameArgsValid,
+  updateScoreArgsValid,
+  updateSpecterArgsValid,
 } from "./helpers/socketValidators.js";
 
 const PORT = process.env.BACKEND_PORT || 5000;
@@ -100,8 +104,8 @@ io.on("connection", async (socket) => {
   /**
    * Enter to the room
    */
-  socket.on(SOCKETS.ENTER_ROOM, ({ username, roomName }) => {
-    const player = Player.getByName(username);
+  socket.on(SOCKETS.ENTER_ROOM, ({ roomName }) => {
+    const player = Player.getBySocketId(socket.id);
     const room = Room.getByName(roomName);
     if (!enterRoomArgsValid(room, player)) return;
 
@@ -110,7 +114,7 @@ io.on("connection", async (socket) => {
 
     socket.join(room.name);
     console.log(
-      `Player ${username} with socket ${socket.id} joined ${room.name} room`
+      `Player ${player.username} with socket ${socket.id} joined ${room.name} room`
     );
 
     // Send players and room info when new player joins
@@ -123,15 +127,15 @@ io.on("connection", async (socket) => {
   /**
    * Exit from room
    */
-  socket.on(SOCKETS.EXIT_ROOM, ({ username, roomName }) => {
-    const player = Player.getByName(username);
-    const room = Room.getByName(roomName);
+  socket.on(SOCKETS.EXIT_ROOM, () => {
+    const player = Player.getBySocketId(socket.id);
+    const room = Room.getByName(player.roomName);
 
     if (!exitRoomArgsValid(room, player)) return;
 
     console.log("On player", player.username, "leave room:", room.name);
 
-    room.removePlayer(username);
+    room.removePlayer(player.username);
 
     if (player.isAdmin) {
       player.isAdmin = false;
@@ -140,7 +144,7 @@ io.on("connection", async (socket) => {
     socket.leave(room.name);
 
     if (room.players.length === 0) {
-      Game.removeRoom(roomName);
+      Game.removeRoom(room.name);
     } else {
       room.players[0].isAdmin = true;
       // Send players and room info when player left
@@ -154,27 +158,93 @@ io.on("connection", async (socket) => {
   /**
    * Start game
    */
-  socket.on(SOCKETS.START_GAME, ({ username, roomName }) => {
-    const player = Player.getByName(username);
-    const room = Room.getByName(roomName);
+  socket.on(SOCKETS.START_GAME, () => {
+    const player = Player.getBySocketId(socket.id);
+    const room = Room.getByName(player.roomName);
 
     if (!startGameArgsValid(room, player)) return;
 
     room.gameStarted = true;
-
+    console.log(`In the room ${room.name} game started!`);
     // Send to the players that game started
+    // TODO: Send to the player some stack of pieces
     io.to(room.name).emit(SOCKETS.GAME_STARTED);
   });
 
   /**
-   * Restart game
+   * Gameover for player
    */
-  socket.on(SOCKETS.RESTART_GAME, ({ roomName }) => {});
+  socket.on(SOCKETS.GAMEOVER, () => {
+    const player = Player.getBySocketId(socket.id);
+    const room = Room.getByName(player.roomName);
+
+    if (!gameoverArgsValid(room, player)) return;
+
+    player.gameover = true;
+    room.gameover =
+      room.players.filter((player) => !player.gameover).length < 2;
+
+    if (room.gameover) {
+      room.assignWinner();
+      console.log(`Game ${room.name} finished!`);
+    }
+
+    io.to(room.name).emit(SOCKETS.GAMEOVER, {
+      players: room.players,
+      endGame: room.gameover,
+    });
+  });
 
   /**
-   * End game
+   * Restart the game
    */
-  socket.on(SOCKETS.END_GAME, ({ roomName }) => {});
+  socket.on(SOCKETS.RESTART_GAME, () => {
+    const player = Player.getBySocketId(socket.id);
+    const room = Room.getByName(player.roomName);
+
+    if (!restartGameArgsValid(room, player)) return;
+
+    room.restartGame();
+    updateWaitingRooms(socket);
+
+    io.to(room.name).emit(SOCKETS.RESTART_GAME);
+  });
+
+  /**
+   * Update specter
+   */
+  socket.on(SOCKETS.UPDATE_SPECTER, ({ specter }) => {
+    const player = Player.getBySocketId(socket.id);
+    const room = Room.getByName(player.roomName);
+
+    if (!updateSpecterArgsValid(room, player, specter)) return;
+
+    player.specter = specter;
+
+    socket.broadcast
+      .to(room.name)
+      .emit(SOCKETS.UPDATE_SPECTER, { username: player.username, specter });
+  });
+
+  /**
+   * Update score
+   */
+  socket.on(SOCKETS.UPDATE_SCORE, ({ score }) => {
+    const player = Player.getBySocketId(socket.id);
+    const room = Room.getByName(player.roomName);
+
+    if (!updateScoreArgsValid(room, player, score)) return;
+
+    player.score = score;
+    console.log(
+      players[players.findIndex((player) => player.socketId === socket.id)]
+        .score
+    );
+
+    socket.broadcast
+      .to(room.name)
+      .emit(SOCKETS.UPDATE_SCORE, { username: player.username, score });
+  });
 
   socket.on("disconnect", () => {
     const player = Player.getBySocketId(socket.id);

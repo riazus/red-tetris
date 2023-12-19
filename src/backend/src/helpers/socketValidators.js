@@ -30,7 +30,7 @@ const exitRoomArgsValid = (room, player) => {
 };
 
 const enterRoomArgsValid = (room, player) => {
-  if (!player || !room) {
+  if (!player || !room || room.gameStarted) {
     return false;
   }
 
@@ -47,10 +47,37 @@ const enterRoomArgsValid = (room, player) => {
 };
 
 const startGameArgsValid = (room, player) => {
-  if (!room || !player) return false;
-  if (!player.isAdmin) return false;
+  return (
+    room && player && player.isAdmin && playerAlreadyInRoom(player.socketId)
+  );
+};
 
-  return true;
+const updateSpecterArgsValid = (room, player, specter) => {
+  return (
+    room &&
+    player &&
+    specter &&
+    room.gameStarted &&
+    playerAlreadyInRoom(player.socketId)
+  );
+};
+
+const gameoverArgsValid = (room, player) => {
+  return (
+    room &&
+    player &&
+    room.gameStarted &&
+    playerAlreadyInRoom(player.socketId) &&
+    !player.gameover
+  );
+};
+
+const restartGameArgsValid = (room, player) => {
+  return room && player && player.isAdmin && room.gameStarted && room.gameover;
+};
+
+const updateScoreArgsValid = (room, player, score) => {
+  return room && player && score && room.gameStarted && !room.gameover;
 };
 
 const playerAlreadyInRoom = (socketId) => {
@@ -64,4 +91,8 @@ export {
   enterRoomArgsValid,
   exitRoomArgsValid,
   startGameArgsValid,
+  updateSpecterArgsValid,
+  gameoverArgsValid,
+  restartGameArgsValid,
+  updateScoreArgsValid,
 };
