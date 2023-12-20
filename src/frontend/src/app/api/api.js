@@ -1,7 +1,18 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { SOCKETS } from "../../const";
+import io from "socket.io-client";
 
 // TODO
 const API_BASE_URL = "http://localhost:5000";
+
+let socket;
+function getSocket() {
+  if (!socket) {
+    console.log("Create new socket connection");
+    socket = io(API_BASE_URL, { path: "/socket" });
+  }
+  return socket;
+}
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE_URL,
@@ -10,22 +21,73 @@ const baseQuery = fetchBaseQuery({
 export const api = createApi({
   baseQuery,
   endpoints: (builder) => ({
-    getUsers: builder.query({ query: () => ({ url: "users" }) }),
-    checkIfNameValid: builder.mutation({
-      query: (name) => ({ url: `username-valid?name=${name}` }),
+    getLeaderboard: builder.query({ query: () => ({ url: "leaderboard" }) }),
+    getAvailableRooms: builder.query({
+      query: () => ({ url: "rooms" }),
+      async onCacheEntryAdded(
+        _,
+        { cacheDataLoaded, cacheEntryRemoved, updateCachedData }
+      ) {
+        try {
+          await cacheDataLoaded;
+
+          const socket = getSocket();
+
+          socket.on(SOCKETS.ADD_WAITING_ROOM, (newRoom) => {
+            updateCachedData((draft) => {
+              draft.push(newRoom);
+            });
+          });
+
+          socket.on(SOCKETS.DELETE_WAITING_ROOM, (deletedRoom) => {
+            updateCachedData((draft) => {
+              const ind = draft.findIndex(
+                (room) => room.name === deletedRoom.name
+              );
+              draft.splice(ind, 1);
+            });
+          });
+
+          await cacheEntryRemoved;
+
+          socket.off(SOCKETS.ADD_WAITING_ROOM);
+          socket.off(SOCKETS.DELETE_WAITING_ROOM);
+        } catch {}
+      },
+    }),
+    addPlayerToLeaderboard: builder.mutation({
+      query: (body) => ({ url: "leaderboard", body, method: "POST" }),
     }),
     createUser: builder.mutation({
-      query: (body) => ({
-        url: "users",
-        method: "POST",
-        body: body,
-      }),
+      queryFn: (username) => {
+        const socket = getSocket();
+        return {
+          data: new Promise((resolve) => {
+            socket.emit(SOCKETS.CREATE_USER, { username }, (response) =>
+              resolve(response)
+            );
+          }),
+        };
+      },
+    }),
+    createRoom: builder.mutation({
+      queryFn: (data) => {
+        const socket = getSocket();
+        return {
+          data: new Promise((resolve) => {
+            socket.emit(SOCKETS.CREATE_ROOM, data, (response) =>
+              resolve(response)
+            );
+          }),
+        };
+      },
     }),
   }),
 });
 
 export const {
-  useGetUsersQuery,
+  useGetLeaderboardQuery,
   useCreateUserMutation,
-  useCheckIfNameValidMutation,
+  useCreateRoomMutation,
+  useGetAvailableRoomsQuery,
 } = api;

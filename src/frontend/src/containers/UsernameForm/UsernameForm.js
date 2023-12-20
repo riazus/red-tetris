@@ -1,25 +1,25 @@
 import { useEffect, useState } from "react";
-import { useCheckIfNameValidMutation } from "../../app/api/api";
+import { useCreateUserMutation } from "../../app/api/api";
 import { useDispatch } from "react-redux";
 import { setUsername as setUsernameSlice } from "../../app/slices/userSlice";
 
 function UsernameForm() {
   const [username, setUsername] = useState("");
   const dispatch = useDispatch();
-  const [checkUsername, { data, isLoading, isSuccess }] =
-    useCheckIfNameValidMutation();
+  const [createUser, { data, isLoading, isSuccess }] = useCreateUserMutation();
 
   const onUsernameInputSubmit = async (e, username) => {
     e.preventDefault();
-    await checkUsername(username);
+    createUser(username);
   };
 
   useEffect(() => {
     if (isSuccess) {
-      if (data.isNameValid === true) {
-        dispatch(setUsernameSlice(username));
+      if (data.isUsernameInvalid) {
+        console.log("Username invalid!");
       } else {
-        console.error("Username is not valid");
+        dispatch(setUsernameSlice(username));
+        setUsername("");
       }
     }
   }, [isLoading]);

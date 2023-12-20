@@ -9,7 +9,7 @@ describe("Room", () => {
       name: "test_name",
       players: [],
       gameStarted: false,
-      gameOver: false,
+      gameover: false,
       isSolo: false,
     });
 

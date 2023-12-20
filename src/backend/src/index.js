@@ -27,7 +27,9 @@ app.use(cors());
 app.use(json());
 
 app.get("/rooms", (_, res) => {
-  res.send(rooms.filter((room) => !room.isSolo));
+  res.send(
+    rooms.filter((room) => !room.isSolo).map((room) => ({ name: room.name }))
+  );
 });
 
 app.get("/leaderboard", async (_, res) => {
@@ -56,20 +58,13 @@ const io = new Server(server, {
   path: "/socket",
 });
 
-const updateWaitingRooms = (socket) => {
-  const roomNames = Game.getWaitingRoomNames();
-  socket.broadcast.emit(SOCKETS.UPDATE_WAITING_ROOMS, roomNames);
-};
-
-const sendResponseAfterCreateRoom = (socket, isSucces, message) => {
-  socket.emit(SOCKETS.CREATE_ROOM_RESPONSE, { isSucces, message });
-};
-
 io.on("connection", async (socket) => {
+  console.log(`On client with socket id ${socket.id} connected`);
+
   /**
    * Create user
    */
-  socket.on(SOCKETS.CREATE_USER, ({ username }) => {
+  socket.on(SOCKETS.CREATE_USER, ({ username }, callback) => {
     const isUsernameInvalid = players.some(
       (player) => player.username === username
     );
@@ -84,21 +79,21 @@ io.on("connection", async (socket) => {
       new Player(socket.id, username);
     }
 
-    socket.emit(SOCKETS.CREATE_USER_RESPONSE, { isUsernameInvalid });
+    callback({ isUsernameInvalid });
   });
 
   /**
    * Create new room
    */
-  socket.on(SOCKETS.CREATE_ROOM, ({ roomName, isSolo }) => {
+  socket.on(SOCKETS.CREATE_ROOM, ({ roomName, isSolo }, callback) => {
     const { valid, message } = createRoomArgsValid(socket, roomName);
 
     if (valid) {
-      new Room(roomName, isSolo);
-      updateWaitingRooms(socket);
+      const { name } = new Room(roomName, isSolo);
+      io.emit(SOCKETS.ADD_WAITING_ROOM, { name });
     }
 
-    sendResponseAfterCreateRoom(socket, valid, message);
+    callback({ valid, message });
   });
 
   /**
@@ -145,6 +140,7 @@ io.on("connection", async (socket) => {
 
     if (room.players.length === 0) {
       Game.removeRoom(room.name);
+      io.emit(SOCKETS.DELETE_WAITING_ROOM, { name: room.name });
     } else {
       room.players[0].isAdmin = true;
       // Send players and room info when player left
@@ -247,6 +243,8 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("disconnect", () => {
+    console.log(`On client with socket id ${socket.id} disconnected`);
+
     const player = Player.getBySocketId(socket.id);
     if (!player) return;
 
@@ -259,6 +257,7 @@ io.on("connection", async (socket) => {
 
       if (room.players.length === 0) {
         Game.removeRoom(room.name);
+        io.emit(SOCKETS.DELETE_WAITING_ROOM, { name: room.name });
       } else {
         room.players[0].isAdmin = true;
         // Send players and room info when player left

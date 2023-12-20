@@ -13,7 +13,7 @@ class Room {
     this.name = name;
     this.players = [];
     this.gameStarted = false;
-    this.gameOver = false;
+    this.gameover = false;
     this.isSolo = isSolo;
     rooms.push(this);
   }

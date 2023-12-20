@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Link from "../../components/Link";
-import { useGetUsersQuery } from "../../app/api/api";
+import { useGetLeaderboardQuery } from "../../app/api/api";
 
 function Leaderboard() {
-  const { data, isLoading, isSuccess } = useGetUsersQuery();
+  const { data, isLoading, isSuccess } = useGetLeaderboardQuery();
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
