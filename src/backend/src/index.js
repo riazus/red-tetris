@@ -114,7 +114,6 @@ io.on("connection", async (socket) => {
 
     // Send players and room info when new player joins
     io.to(room.name).emit(SOCKETS.UPDATE_ROOM_PLAYERS, {
-      room: room.name,
       players: room.players,
     });
   });

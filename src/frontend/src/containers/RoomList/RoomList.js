@@ -2,8 +2,10 @@ import Link from "../../components/Link";
 import { useGetAvailableRoomsQuery } from "../../app/api/api";
 import { useState } from "react";
 import CreateRoomModal from "../CreateRoomModal/CreateRoomModal";
+import { useSelector } from "react-redux";
 
 function RoomList() {
+  const { username } = useSelector((state) => state.userState);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: rooms, isLoading: isRoomsLoading } =
     useGetAvailableRoomsQuery();
@@ -25,6 +27,9 @@ function RoomList() {
             return (
               <li key={ind}>
                 <p>{room.name}</p>
+                <Link to={`http://${window.location.host}/#${room.name}[${username}]`}>
+                  Join to {room.name} room
+                </Link>
               </li>
             );
           })}

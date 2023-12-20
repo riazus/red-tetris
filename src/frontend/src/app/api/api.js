@@ -6,7 +6,7 @@ import io from "socket.io-client";
 const API_BASE_URL = "http://localhost:5000";
 
 let socket;
-function getSocket() {
+export function getSocket() {
   if (!socket) {
     console.log("Create new socket connection");
     socket = io(API_BASE_URL, { path: "/socket" });

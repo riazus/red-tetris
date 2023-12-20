@@ -1,12 +1,12 @@
 import { render } from "@testing-library/react";
-import IncreaseScoreForm from "./IncreaseScoreForm";
+import GameRoomForm from "./GameRoom";
 import { Provider } from "react-redux";
 import { store } from "../../app/store";
 
 it("should have increase and reduce buttons", () => {
   const { getByText, getAllByRole } = render(
     <Provider store={store}>
-      <IncreaseScoreForm />
+      <GameRoomForm />
     </Provider>
   );
 
@@ -18,7 +18,7 @@ it("should have increase and reduce buttons", () => {
 it("should have count for increase input", () => {
   const { getByRole } = render(
     <Provider store={store}>
-      <IncreaseScoreForm />
+      <GameRoomForm />
     </Provider>
   );
 

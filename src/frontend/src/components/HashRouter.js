@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Home from "../containers/Home/Home";
+import GameRoomForm from "../containers/GameRoom/GameRoom";
 
 function HashRouter({ router }) {
   const [currElement, setCurrElement] = useState(<Home />);
@@ -11,7 +12,25 @@ function HashRouter({ router }) {
 
     const onLocationChanged = (ev) => {
       const path = window.location.href.split("#")[1];
-      const element = router.find((item) => item.href === path);
+      let element;
+
+      // TODO:
+      if (path.includes("[") && path.includes("]")) {
+        const params = extractRoomAndPlayerRoom(path);
+        if (params) {
+          element = {
+            href: ":roomName[:playerName]",
+            element: (
+              <GameRoomForm
+                playerName={params.playerName}
+                roomName={params.roomName}
+              />
+            ),
+          };
+        }
+      } else {
+        element = router.find((item) => item.href === path);
+      }
 
       if (element) setCurrElement(element.element);
       else window.location.replace("/");
@@ -23,6 +42,16 @@ function HashRouter({ router }) {
       window.removeEventListener("popstate", onLocationChanged);
     };
   }, []);
+
+  const extractRoomAndPlayerRoom = (url) => {
+    const match = url.match(/([^[]+)\[([^\]]+)\]/);
+
+    if (match) {
+      const roomName = match[1];
+      const playerName = match[2];
+      return { roomName, playerName };
+    }
+  };
 
   return currElement;
 }
