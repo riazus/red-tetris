@@ -1,4 +1,4 @@
-function WaitingRoom({ players, isAdmin }) {
+function WaitingRoom({ players, isAdmin, launchGame }) {
   return (
     <>
       <ul>
@@ -12,7 +12,9 @@ function WaitingRoom({ players, isAdmin }) {
             );
           })}
       </ul>
-      {isAdmin && <button>Launch game</button>}
+      {isAdmin && (
+        <button onClick={launchGame}>Launch game</button>
+      )}
     </>
   );
 }

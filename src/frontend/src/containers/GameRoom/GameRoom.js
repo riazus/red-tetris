@@ -32,6 +32,10 @@ function GameRoomForm({ roomName, playerName }) {
     };
   }, []);
 
+  const launchGame = () => {
+    socket.emit(SOCKETS.START_GAME);
+  };
+
   const handleExit = () => {
     socket.emit(SOCKETS.EXIT_ROOM);
     navigate("#rooms");
@@ -47,7 +51,11 @@ function GameRoomForm({ roomName, playerName }) {
       {gameStarted ? (
         <MainGameForm />
       ) : (
-        <WaitingRoom players={roomPlayers} isAdmin={isCurrPlayerAdmin} />
+        <WaitingRoom
+          players={roomPlayers}
+          isAdmin={isCurrPlayerAdmin}
+          launchGame={launchGame}
+        />
       )}
     </div>
   );
