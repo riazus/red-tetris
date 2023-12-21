@@ -52,11 +52,11 @@ const startGameArgsValid = (room, player) => {
   );
 };
 
-const updateSpecterArgsValid = (room, player, specter) => {
+const updateSpectrumArgsValid = (room, player, spectrum) => {
   return (
     room &&
     player &&
-    specter &&
+    spectrum &&
     room.gameStarted &&
     playerAlreadyInRoom(player.socketId)
   );
@@ -91,7 +91,7 @@ export {
   enterRoomArgsValid,
   exitRoomArgsValid,
   startGameArgsValid,
-  updateSpecterArgsValid,
+  updateSpectrumArgsValid,
   gameoverArgsValid,
   restartGameArgsValid,
   updateScoreArgsValid,

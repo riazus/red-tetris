@@ -1,5 +1,3 @@
-import { players } from "./Player.js";
-
 const rooms = [];
 
 class Room {
@@ -36,13 +34,8 @@ class Room {
       const index = this.players.findIndex(
         (player) => player.id === playersLeft[0].id
       );
-      const index2 = this.players.findIndex(
-        (player) => player.id === playersLeft[0].id
-      );
 
       this.players[index].isWinner = true;
-
-      console.log(this.players[index].isWinner, players[index2].isWinner);
 
       return this.players[index];
     }
@@ -51,13 +44,23 @@ class Room {
   }
 
   restartGame() {
-    const winner = [...this.players].sort((a, b) => b.score - a.score)[0];
+    let winner;
+
+    if (this.players.length > 1) {
+      const winners = [...this.players]
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 2);
+      winner = !winners[0].isAdmin ? winners[0] : winners[1];
+    } else {
+      winner = this.players[0];
+    }
 
     this.players.forEach((player) => {
       player.isWinner = false;
       player.gameover = false;
+      player.score = 0;
       // TODO:
-      player.specter = "";
+      player.spectrum = "";
       player.isAdmin = player.socketId === winner.socketId;
     });
 

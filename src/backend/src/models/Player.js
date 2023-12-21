@@ -11,7 +11,7 @@ class Player {
   isWinner;
   score;
   // TODO:
-  specter;
+  spectrum;
 
   constructor(socketId, username) {
     this.socketId = socketId;
@@ -22,7 +22,7 @@ class Player {
     this.isWinner = false;
     this.roomName = "";
     // TODO:
-    this.specter = "";
+    this.spectrum = "";
     players.push(this);
 
     return this;
