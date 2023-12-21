@@ -131,9 +131,12 @@ io.on("connection", async (socket) => {
     player.roomName = "";
     player.score = 0;
     player.spectrum = "";
+    player.gameover = false;
+    player.isWinner = false;
 
     if (player.isAdmin) {
       player.isAdmin = false;
+      room.players[0].isAdmin = true;
     }
 
     socket.leave(room.name);
@@ -142,20 +145,22 @@ io.on("connection", async (socket) => {
       Game.removeRoom(room.name);
       io.emit(SOCKETS.DELETE_WAITING_ROOM, { name: room.name });
     } else if (room.gameStarted) {
-      room.players[0].isAdmin = true;
-      room.gameover =
-        room.players.filter((player) => !player.gameover).length < 2;
-      if (room.gameover) {
-        room.assignWinner();
-        console.log(`Game ${room.name} finished!`);
-        io.to(room.name).emit(SOCKETS.GAMEOVER, {
-          players: room.players,
-          endGame: room.gameover,
-        });
-        io.to(room.name).emit(SOCKETS.UPDATE_ROOM_PLAYERS, {
-          players: room.players,
-        });
+      if (!room.gameover) {
+        room.gameover =
+          room.players.filter((player) => !player.gameover).length < 2;
+        if (room.gameover) {
+          room.assignWinner();
+          console.log(`Game ${room.name} finished!`);
+          io.to(room.name).emit(SOCKETS.GAMEOVER, {
+            players: room.players,
+            endGame: room.gameover,
+          });
+        }
       }
+
+      io.to(room.name).emit(SOCKETS.UPDATE_ROOM_PLAYERS, {
+        players: room.players,
+      });
     } else {
       room.players[0].isAdmin = true;
       // Send players and room info when player left
