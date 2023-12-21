@@ -80,6 +80,7 @@ function GameRoomForm({ roomName, playerName }) {
           updateCurrentPlayers={updateCurrentPlayers}
           setPlayers={setRoomPlayers}
           setRestartBtnEnable={setRestartBtnEnable}
+          restartBtnEnable={restartBtnEnable}
         />
       ) : (
         <WaitingRoom

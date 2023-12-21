@@ -62,10 +62,10 @@ io.on("connection", async (socket) => {
   /**
    * Create user
    */
-  socket.on(SOCKETS.CREATE_USER, ({ username }, callback) => {
-    const isUsernameInvalid = players.some(
-      (player) => player.username === username
-    );
+  socket.on(SOCKETS.CREATE_USER, async ({ username }, callback) => {
+    const isUsernameInvalid =
+      players.some((player) => player.username === username) ||
+      (await Leaderboard.findOne({ where: { username } }));
 
     if (!isUsernameInvalid) {
       console.log(
@@ -122,6 +122,7 @@ io.on("connection", async (socket) => {
   socket.on(SOCKETS.EXIT_ROOM, () => {
     const player = Player.getBySocketId(socket.id);
     const room = Room.getByName(player?.roomName);
+    let wasAdmin = false;
 
     if (!exitRoomArgsValid(room, player)) return;
 
@@ -135,8 +136,8 @@ io.on("connection", async (socket) => {
     player.isWinner = false;
 
     if (player.isAdmin) {
+      wasAdmin = true;
       player.isAdmin = false;
-      room.players[0].isAdmin = true;
     }
 
     socket.leave(room.name);
@@ -145,6 +146,8 @@ io.on("connection", async (socket) => {
       Game.removeRoom(room.name);
       io.emit(SOCKETS.DELETE_WAITING_ROOM, { name: room.name });
     } else if (room.gameStarted) {
+      if (wasAdmin) room.players[0].isAdmin = true;
+
       if (!room.gameover) {
         room.gameover =
           room.players.filter((player) => !player.gameover).length < 2;
@@ -162,7 +165,7 @@ io.on("connection", async (socket) => {
         players: room.players,
       });
     } else {
-      room.players[0].isAdmin = true;
+      if (wasAdmin) room.players[0].isAdmin = true;
       // Send players and room info when player left
       io.to(room.name).emit(SOCKETS.UPDATE_ROOM_PLAYERS, {
         players: room.players,

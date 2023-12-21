@@ -1,8 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
+import { useAddPlayerToLeaderboardMutation } from "../../app/api/api";
+import { useSelector } from "react-redux";
 
 function SaveScoreModal({ score, isOpen, setIsOpen, setRestartBtnEnable }) {
-  const [saveScore, setSaveScore] = useState(false);
+  const checkboxRef = useRef();
+  const [addPlayerToLeaderboard] = useAddPlayerToLeaderboardMutation();
+  const { username } = useSelector((state) => state.userState);
 
   useEffect(() => {
     if (isOpen) {
@@ -11,6 +15,9 @@ function SaveScoreModal({ score, isOpen, setIsOpen, setRestartBtnEnable }) {
   }, [isOpen]);
 
   const handleCloseModal = () => {
+    if (checkboxRef.current.checked) {
+      addPlayerToLeaderboard({ username, score });
+    }
     setRestartBtnEnable(true);
     setIsOpen(false);
   };
@@ -25,11 +32,7 @@ function SaveScoreModal({ score, isOpen, setIsOpen, setRestartBtnEnable }) {
       <h3>Your score: {score}</h3>
       <label>
         Do you want save it?
-        <input
-          type="checkbox"
-          checked={saveScore}
-          onChange={() => setSaveScore(!saveScore)}
-        />
+        <input type="checkbox" defaultChecked={false} ref={checkboxRef} />
       </label>
     </Modal>
   );

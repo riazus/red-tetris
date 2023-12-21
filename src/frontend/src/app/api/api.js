@@ -56,7 +56,14 @@ export const api = createApi({
       },
     }),
     addPlayerToLeaderboard: builder.mutation({
-      query: (body) => ({ url: "leaderboard", body, method: "POST" }),
+      query: (body) => ({
+        url: "leaderboard",
+        body,
+        method: "POST",
+        responseHandler: (res) => {
+          if (res.status === 201) res.text();
+        },
+      }),
     }),
     createUser: builder.mutation({
       queryFn: (username) => {
@@ -90,4 +97,5 @@ export const {
   useCreateUserMutation,
   useCreateRoomMutation,
   useGetAvailableRoomsQuery,
+  useAddPlayerToLeaderboardMutation,
 } = api;

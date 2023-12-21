@@ -9,6 +9,7 @@ function MainGameForm({
   setPlayers,
   updateCurrentPlayers,
   setRestartBtnEnable,
+  restartBtnEnable,
 }) {
   const [spectrum, setSpectrum] = useState("");
   const [score, setScore] = useState(0);
@@ -86,9 +87,14 @@ function MainGameForm({
         type="text"
         value={spectrum}
         onChange={handleUpdateSpectrum}
+        disabled={restartBtnEnable}
       ></input>
-      <button onClick={handleUpdateScore}>Update score</button>
-      <button onClick={handleGameover}>Gameover</button>
+      <button disabled={restartBtnEnable} onClick={handleUpdateScore}>
+        Update score
+      </button>
+      <button disabled={restartBtnEnable} onClick={handleGameover}>
+        Gameover
+      </button>
       <ul>
         {players
           .filter((p) => p.username !== playerName)
