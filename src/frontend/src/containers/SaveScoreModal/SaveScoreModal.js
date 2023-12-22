@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import Modal from "react-modal";
-import { useSelector } from "react-redux";
 import { SOCKETS } from "../../const";
 
 function SaveScoreModal({
