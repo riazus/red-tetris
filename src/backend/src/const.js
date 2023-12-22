@@ -14,6 +14,7 @@ const SOCKETS = {
   RESTART_GAME: "restart_game",
   ADD_WAITING_ROOM: "add_waiting_room",
   DELETE_WAITING_ROOM: "delete_waiting_room",
+  ADD_LEADER: "add_leader",
 };
 
 export { SOCKETS };
