@@ -80,6 +80,10 @@ const updateScoreArgsValid = (room, player, score) => {
   return room && player && score && room.gameStarted && !room.gameover;
 };
 
+const addLeaderArgsValid = (room, player, score) => {
+  return room && player && score && room.gameStarted && room.gameover;
+};
+
 const playerAlreadyInRoom = (socketId) => {
   return rooms.some((room) =>
     room.players.some((player) => player.socketId === socketId)
@@ -95,4 +99,5 @@ export {
   gameoverArgsValid,
   restartGameArgsValid,
   updateScoreArgsValid,
+  addLeaderArgsValid,
 };
