@@ -14,7 +14,8 @@ function Home() {
       ) : (
         <>
           <h2>Hello, {username}</h2>
-          <Link to="#leaderboard">Link to Leaderboard</Link>
+          <Link to="#leaderboard">Link to the Leaderboard</Link> <br />
+          <Link to="#rooms">Link to the Avaialable Rooms</Link>
         </>
       )}
     </>

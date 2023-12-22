@@ -1,3 +1,5 @@
+//import { Room } from "./Room";
+
 const players = [];
 
 class Player {
@@ -5,14 +7,22 @@ class Player {
   username;
   roomName;
   isAdmin;
+  gameover;
+  isWinner;
   score;
+  // TODO:
+  spectrum;
 
   constructor(socketId, username) {
     this.socketId = socketId;
     this.username = username;
     this.score = 0;
     this.isAdmin = false;
+    this.gameover = false;
+    this.isWinner = false;
     this.roomName = "";
+    // TODO:
+    this.spectrum = "";
     players.push(this);
 
     return this;
