@@ -21,7 +21,32 @@ const baseQuery = fetchBaseQuery({
 export const api = createApi({
   baseQuery,
   endpoints: (builder) => ({
-    getLeaderboard: builder.query({ query: () => ({ url: "leaderboard" }) }),
+    getLeaderboard: builder.query({
+      query: () => ({ url: "leaderboard" }),
+      async onCacheEntryAdded(
+        _,
+        { cacheDataLoaded, cacheEntryRemoved, updateCachedData }
+      ) {
+        try {
+          await cacheDataLoaded;
+
+          const socket = getSocket();
+
+          socket.on(SOCKETS.ADD_LEADER, ({ username, score }) => {
+            updateCachedData((draft) => {
+              const ind = draft.findIndex((d) => d.username === username);
+
+              if (ind !== -1) draft[ind].score = score;
+              else draft.push({ username, score });
+            });
+          });
+
+          await cacheEntryRemoved;
+
+          socket.off(SOCKETS.ADD_LEADER);
+        } catch {}
+      },
+    }),
     getAvailableRooms: builder.query({
       query: () => ({ url: "rooms" }),
       async onCacheEntryAdded(
@@ -55,16 +80,6 @@ export const api = createApi({
         } catch {}
       },
     }),
-    addPlayerToLeaderboard: builder.mutation({
-      query: (body) => ({
-        url: "leaderboard",
-        body,
-        method: "POST",
-        responseHandler: (res) => {
-          if (res.status === 201) res.text();
-        },
-      }),
-    }),
     createUser: builder.mutation({
       queryFn: (username) => {
         const socket = getSocket();
@@ -97,5 +112,4 @@ export const {
   useCreateUserMutation,
   useCreateRoomMutation,
   useGetAvailableRoomsQuery,
-  useAddPlayerToLeaderboardMutation,
 } = api;

@@ -76,6 +76,7 @@ function MainGameForm({
   return (
     <div>
       <SaveScoreModal
+        socket={socket}
         isOpen={isModalOpen}
         score={score}
         setIsOpen={setIsModalOpen}

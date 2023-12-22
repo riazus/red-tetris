@@ -1,22 +1,8 @@
-import React, { useEffect, useState } from "react";
 import Link from "../../components/Link";
 import { useGetLeaderboardQuery } from "../../app/api/api";
 
 function Leaderboard() {
-  const { data, isLoading, isSuccess } = useGetLeaderboardQuery();
-  const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      const sortedData = [...data].sort((a, b) => b.score - a.score);
-
-      setUsers(
-        sortedData.map((item) => {
-          return { username: item.username, score: item.score };
-        })
-      );
-    }
-  }, [isLoading]);
+  const { data, isLoading } = useGetLeaderboardQuery();
 
   return (
     <>
@@ -24,16 +10,18 @@ function Leaderboard() {
       {isLoading ? (
         <h2>Loading...</h2>
       ) : (
-        users && (
+        data && (
           <ul>
-            {users.map((item, ind) => {
-              return (
-                <li key={ind}>
-                  <p>{item.username}</p>
-                  <p>{item.score}</p>
-                </li>
-              );
-            })}
+            {[...data]
+              .sort((a, b) => b.score - a.score)
+              .map((item, ind) => {
+                return (
+                  <li key={ind}>
+                    <p>{item.username}</p>
+                    <p>{item.score}</p>
+                  </li>
+                );
+              })}
           </ul>
         )
       )}

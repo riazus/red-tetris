@@ -1,11 +1,14 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
 function Link({ to, children }) {
+  const { username } = useSelector((state) => state.userState);
+
   const onClick = (event) => {
     event.preventDefault();
     window.history.pushState({}, "", to);
-    const navEvent = new PopStateEvent("popstate");
-    window.dispatchEvent(navEvent);
+    const ev = new CustomEvent("linkClick", { detail: { username } });
+    window.dispatchEvent(ev);
   };
 
   return (

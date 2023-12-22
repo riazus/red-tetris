@@ -10,7 +10,10 @@ function HashRouter({ router }) {
       window.location.replace("/");
     }
 
-    const onLocationChanged = (ev) => {
+    const onLinkClick = (ev) => {
+      // TODO make url redirects with buttons
+      if (!ev.detail.username) return;
+
       const path = window.location.href.split("#")[1];
       let element;
 
@@ -36,10 +39,16 @@ function HashRouter({ router }) {
       else window.location.replace("/");
     };
 
+    const onLocationChanged = (ev) => {
+      window.location.replace("/");
+    };
+
     window.addEventListener("popstate", onLocationChanged);
+    window.addEventListener("linkClick", onLinkClick);
 
     return () => {
       window.removeEventListener("popstate", onLocationChanged);
+      window.addEventListener("linkClick", onLinkClick);
     };
   }, []);
 

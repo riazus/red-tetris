@@ -8,6 +8,7 @@ import { Player, players } from "./models/Player.js";
 import { Room, rooms } from "./models/Room.js";
 import { Game } from "./models/Game.js";
 import {
+  addLeaderArgsValid,
   createRoomArgsValid,
   enterRoomArgsValid,
   exitRoomArgsValid,
@@ -40,12 +41,14 @@ app.post("/leaderboard", async (req, res) => {
 
   const findUser = await Leaderboard.findOne({ where: { username } });
 
-  if (findUser) {
-    res.status(400).send({ message: "Player with this name already exists" });
+  if (findUser && findUser.score < score) {
+    //res.status(400).send({ message: "Player with this name already exists" });
+    await Leaderboard.update({ score }, { where: { username } });
   } else {
     await Leaderboard.create({ username, score });
-    res.sendStatus(201);
   }
+
+  res.sendStatus(201);
 });
 
 const io = new Server(server, {
@@ -88,7 +91,8 @@ io.on("connection", async (socket) => {
 
     if (valid) {
       const { name } = new Room(roomName, isSolo);
-      io.emit(SOCKETS.ADD_WAITING_ROOM, { name });
+      if (isSolo) socket.emit(SOCKETS.ADD_WAITING_ROOM, { name });
+      else io.emit(SOCKETS.ADD_WAITING_ROOM, { name });
     }
 
     callback({ valid, message });
@@ -268,6 +272,31 @@ io.on("connection", async (socket) => {
     socket.broadcast
       .to(room.name)
       .emit(SOCKETS.UPDATE_SCORE, { username: player.username, score });
+  });
+
+  /**
+   * Add player to leaderboard
+   */
+  socket.on(SOCKETS.ADD_LEADER, async ({ score }) => {
+    const player = Player.getBySocketId(socket.id);
+    const room = Room.getByName(player.roomName);
+
+    if (!addLeaderArgsValid(room, player, score)) return;
+
+    const username = player.username;
+
+    // Check player in db
+    const findUser = await Leaderboard.findOne({
+      where: { username },
+    });
+
+    if (findUser && findUser.score < score) {
+      await Leaderboard.update({ score }, { where: { username } });
+    } else {
+      await Leaderboard.create({ username, score });
+    }
+
+    io.emit(SOCKETS.ADD_LEADER, { username, score });
   });
 
   socket.on("disconnect", () => {

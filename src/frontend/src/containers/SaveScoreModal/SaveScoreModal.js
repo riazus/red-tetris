@@ -1,12 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Modal from "react-modal";
-import { useAddPlayerToLeaderboardMutation } from "../../app/api/api";
 import { useSelector } from "react-redux";
+import { SOCKETS } from "../../const";
 
-function SaveScoreModal({ score, isOpen, setIsOpen, setRestartBtnEnable }) {
+function SaveScoreModal({
+  socket,
+  score,
+  isOpen,
+  setIsOpen,
+  setRestartBtnEnable,
+}) {
   const checkboxRef = useRef();
-  const [addPlayerToLeaderboard] = useAddPlayerToLeaderboardMutation();
-  const { username } = useSelector((state) => state.userState);
 
   useEffect(() => {
     if (isOpen) {
@@ -16,7 +20,7 @@ function SaveScoreModal({ score, isOpen, setIsOpen, setRestartBtnEnable }) {
 
   const handleCloseModal = () => {
     if (checkboxRef.current.checked) {
-      addPlayerToLeaderboard({ username, score });
+      socket.emit(SOCKETS.ADD_LEADER, { score });
     }
     setRestartBtnEnable(true);
     setIsOpen(false);
