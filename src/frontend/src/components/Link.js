@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 function Link({ to, children }) {
-  const { username } = useSelector((state) => state.userState);
+  const { username } = useSelector((state) => state.player);
 
   const onClick = (event) => {
     event.preventDefault();

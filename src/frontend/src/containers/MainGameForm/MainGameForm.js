@@ -1,86 +1,63 @@
 import { useEffect, useState } from "react";
 import { SOCKETS } from "../../const";
 import SaveScoreModal from "../SaveScoreModal/SaveScoreModal";
+import { emitAppSocketEvent } from "../../sockets/socket";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setIsGameover,
+  updateScore,
+  updateSpectrum,
+} from "../../app/slices/playerSlice";
 
-function MainGameForm({
-  playerName,
-  socket,
-  players,
-  setPlayers,
-  updateCurrentPlayers,
-  setRestartBtnEnable,
-  restartBtnEnable,
-}) {
-  const [spectrum, setSpectrum] = useState("");
-  const [score, setScore] = useState(0);
+function MainGameForm({ players }) {
+  const {
+    score,
+    spectrum,
+    isGameover: isPlayerGameover,
+  } = useSelector((root) => root.player);
+  const { isStarted, isGameover } = useSelector((root) => root.game);
+  const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    socket.on(SOCKETS.UPDATE_SPECTRUM, ({ username, spectrum }) => {
-      setPlayers((prevPlayers) => {
-        const updatedPlayers = [...prevPlayers];
-        const ind = players.findIndex((p) => p.username === username);
-        if (ind !== -1) {
-          updatedPlayers[ind] = { ...updatedPlayers[ind], spectrum };
-        }
-        return updatedPlayers;
-      });
-    });
-
-    socket.on(SOCKETS.UPDATE_SCORE, ({ username, score }) => {
-      setPlayers((prevPlayers) => {
-        const updatedPlayers = [...prevPlayers];
-        const ind = updatedPlayers.findIndex((p) => p.username === username);
-        if (ind !== -1) {
-          updatedPlayers[ind] = { ...updatedPlayers[ind], score };
-        }
-        return updatedPlayers;
-      });
-    });
-
-    socket.on(SOCKETS.GAMEOVER, ({ players, endGame }) => {
-      if (endGame) {
-        setIsModalOpen(true);
-      }
-
-      updateCurrentPlayers([...players]);
-    });
-
-    return () => {
-      socket.off(SOCKETS.UPDATE_SPECTRUM);
-      socket.off(SOCKETS.UPDATE_SCORE);
-      socket.off(SOCKETS.GAMEOVER);
-    };
-  }, []);
+    if (isGameover) {
+      setIsModalOpen(true);
+    }
+  }, [isGameover]);
 
   const handleUpdateSpectrum = (e) => {
-    socket.emit(
+    emitAppSocketEvent(
       SOCKETS.UPDATE_SPECTRUM,
       { spectrum: e.target.value },
       ({ spectrum }) => {
-        setSpectrum(spectrum);
+        dispatch(updateSpectrum(spectrum));
       }
     );
   };
 
   const handleUpdateScore = () => {
-    socket.emit(SOCKETS.UPDATE_SCORE, { score: score + 20 }, ({ score }) => {
-      setScore(score);
-    });
+    emitAppSocketEvent(
+      SOCKETS.UPDATE_SCORE,
+      { score: score + 20 },
+      ({ score }) => {
+        dispatch(updateScore(score));
+      }
+    );
   };
 
   const handleGameover = () => {
-    socket.emit(SOCKETS.GAMEOVER);
+    emitAppSocketEvent(SOCKETS.PLAYER_GAMEOVER);
+    dispatch(setIsGameover(true));
   };
+
+  const controlDisabled = () => (isStarted && isGameover) || isPlayerGameover;
 
   return (
     <div>
       <SaveScoreModal
-        socket={socket}
         isOpen={isModalOpen}
         score={score}
         setIsOpen={setIsModalOpen}
-        setRestartBtnEnable={setRestartBtnEnable}
       />
 
       <p>Score: {score}</p>
@@ -88,28 +65,26 @@ function MainGameForm({
         type="text"
         value={spectrum}
         onChange={handleUpdateSpectrum}
-        disabled={restartBtnEnable}
+        disabled={controlDisabled()}
       ></input>
-      <button disabled={restartBtnEnable} onClick={handleUpdateScore}>
+      <button disabled={controlDisabled()} onClick={handleUpdateScore}>
         Update score
       </button>
-      <button disabled={restartBtnEnable} onClick={handleGameover}>
+      <button disabled={controlDisabled()} onClick={handleGameover}>
         Gameover
       </button>
       <ul>
-        {players
-          .filter((p) => p.username !== playerName)
-          .map((p, i) => {
-            return (
-              <li key={i}>
-                <p>
-                  {p.username} score: {p.score}
-                </p>
-                {p.gameover && <p>Gameover</p>}
-                <input value={p.spectrum} disabled></input>
-              </li>
-            );
-          })}
+        {players.map((p, i) => {
+          return (
+            <li key={i}>
+              <p>
+                {p.username} score: {p.score}
+              </p>
+              {p.gameover && <p>Player lost game</p>}
+              <input value={p.spectrum} disabled></input>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

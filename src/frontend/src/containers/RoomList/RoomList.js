@@ -5,7 +5,7 @@ import CreateRoomModal from "../CreateRoomModal/CreateRoomModal";
 import { useSelector } from "react-redux";
 
 function RoomList() {
-  const { username } = useSelector((state) => state.userState);
+  const { username } = useSelector((state) => state.player);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: rooms, isLoading: isRoomsLoading } =
     useGetAvailableRoomsQuery();

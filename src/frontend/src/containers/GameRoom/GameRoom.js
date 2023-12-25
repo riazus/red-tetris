@@ -1,65 +1,47 @@
-import { useEffect, useState } from "react";
-import { getSocket } from "../../app/api/api";
+import { useEffect } from "react";
 import { SOCKETS } from "../../const";
 import WaitingRoom from "../WaitingRoom/WaitingRoom";
 import MainGameForm from "../MainGameForm/MainGameForm";
 import useNavigate from "../../hooks/useNavigate";
+import { emitAppSocketEvent } from "../../sockets/socket";
+import {
+  gameListeners,
+  removeGameListeners,
+} from "../../sockets/listeners/gameListeners";
+import { useDispatch, useSelector } from "react-redux";
+import { exitRoom } from "../../app/slices/playerSlice";
+import { clearRoom } from "../../app/slices/gameSlice";
 
 function GameRoomForm({ roomName, playerName }) {
-  const [socket] = useState(getSocket());
-  const [roomPlayers, setRoomPlayers] = useState([]);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [isCurrPlayerAdmin, setIsCurrPlayerAdmin] = useState(false);
-  const [isWinner, setIsWinner] = useState(false);
-  const [restartBtnEnable, setRestartBtnEnable] = useState(false);
+  const { players, isStarted, isGameover, isSolo } = useSelector(
+    (root) => root.game
+  );
+  const { isAdmin, isWinner } = useSelector((root) => root.player);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
-    socket.on(SOCKETS.UPDATE_ROOM_PLAYERS, ({ players }) => {
-      updateCurrentPlayers([...players]);
-    });
+    gameListeners(dispatch);
 
-    socket.on(SOCKETS.GAME_STARTED, () => setGameStarted(true));
-
-    socket.on(SOCKETS.RESTART_GAME, () => {
-      setGameStarted(false);
-      setRestartBtnEnable(false);
-    });
-
-    socket.emit(SOCKETS.ENTER_ROOM, { roomName });
+    emitAppSocketEvent(SOCKETS.ENTER_ROOM, { roomName });
 
     return () => {
-      socket.off(SOCKETS.UPDATE_ROOM_PLAYERS);
-      socket.off(SOCKETS.GAME_STARTED);
-      socket.off(SOCKETS.RESTART_GAME);
+      removeGameListeners();
     };
   }, []);
 
-  const updateCurrentPlayers = (players) => {
-    setRoomPlayers(players);
-    setIsCurrPlayerAdmin(
-      players.some((player) => player.username === playerName && player.isAdmin)
-    );
-    setIsWinner(
-      players.some(
-        (player) => player.username === playerName && player.isWinner
-      )
-    );
-  };
-
-  const launchGame = () => {
-    socket.emit(SOCKETS.START_GAME);
-  };
-
   const handleExit = () => {
-    socket.emit(SOCKETS.EXIT_ROOM);
+    emitAppSocketEvent(SOCKETS.EXIT_ROOM);
+    dispatch(exitRoom());
+    dispatch(clearRoom());
     navigate("#rooms");
   };
 
   const restartGame = () => {
-    setRestartBtnEnable(false);
-    socket.emit(SOCKETS.RESTART_GAME);
+    emitAppSocketEvent(SOCKETS.RESTART_GAME);
   };
+
+  const isRestartBtnEnable = () => isGameover && isStarted && isAdmin;
 
   return (
     <div>
@@ -68,26 +50,14 @@ function GameRoomForm({ roomName, playerName }) {
       <h4>Player Name: {playerName}</h4>
       {isWinner && <h5>Congrats you're winner!</h5>}
       <button onClick={handleExit}>Exit from room</button>
-      {restartBtnEnable && isCurrPlayerAdmin && (
+      {isRestartBtnEnable() && (
         <button onClick={restartGame}>Restart Game</button>
       )}
 
-      {gameStarted ? (
-        <MainGameForm
-          playerName={playerName}
-          socket={socket}
-          players={roomPlayers}
-          updateCurrentPlayers={updateCurrentPlayers}
-          setPlayers={setRoomPlayers}
-          setRestartBtnEnable={setRestartBtnEnable}
-          restartBtnEnable={restartBtnEnable}
-        />
+      {isStarted ? (
+        <MainGameForm players={players} />
       ) : (
-        <WaitingRoom
-          players={roomPlayers}
-          isAdmin={isCurrPlayerAdmin}
-          launchGame={launchGame}
-        />
+        <WaitingRoom players={players} isAdmin={isAdmin} isSolo={isSolo} />
       )}
     </div>
   );
