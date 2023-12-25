@@ -1,4 +1,18 @@
-function WaitingRoom({ players, isAdmin, launchGame }) {
+import { useSelector } from "react-redux";
+import { emitAppSocketEvent } from "../../sockets/socket";
+import { SOCKETS } from "../../const";
+
+function WaitingRoom({ players }) {
+  const { isAdmin } = useSelector((root) => root.player);
+  const { isSolo } = useSelector((root) => root.game);
+
+  const launchGame = () => {
+    emitAppSocketEvent(SOCKETS.START_GAME);
+  };
+
+  const launchGameBtnEnable = () =>
+    isAdmin && (isSolo ? true : players.length > 0);
+
   return (
     <>
       <ul>
@@ -12,9 +26,7 @@ function WaitingRoom({ players, isAdmin, launchGame }) {
             );
           })}
       </ul>
-      {isAdmin && (
-        <button onClick={launchGame}>Launch game</button>
-      )}
+      {launchGameBtnEnable() && <button onClick={launchGame}>Launch game</button>}
     </>
   );
 }

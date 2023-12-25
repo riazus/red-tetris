@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useCreateUserMutation } from "../../app/api/api";
 import { useDispatch } from "react-redux";
-import { setUsername as setUsernameSlice } from "../../app/slices/userSlice";
+import { setUsername as setUsernameSlice } from "../../app/slices/playerSlice";
 
 function UsernameForm() {
   const [username, setUsername] = useState("");
@@ -19,7 +19,6 @@ function UsernameForm() {
         console.log("Username invalid!");
       } else {
         dispatch(setUsernameSlice(username));
-        setUsername("");
       }
     }
   }, [isLoading]);

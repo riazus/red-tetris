@@ -3,7 +3,7 @@ import Link from "../../components/Link";
 import UsernameForm from "../UsernameForm/UsernameForm";
 
 function Home() {
-  const { username } = useSelector((state) => state.userState);
+  const { username } = useSelector((state) => state.player);
 
   return (
     <>

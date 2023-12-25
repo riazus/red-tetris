@@ -1,18 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { SOCKETS } from "../../const";
-import io from "socket.io-client";
-
-// TODO
-const API_BASE_URL = "http://localhost:5000";
-
-let socket;
-export function getSocket() {
-  if (!socket) {
-    console.log("Create new socket connection");
-    socket = io(API_BASE_URL, { path: "/socket" });
-  }
-  return socket;
-}
+import { API_BASE_URL, SOCKETS } from "../../const";
+import { emitAppSocketEvent, getAppSocket } from "../../sockets/socket";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE_URL,
@@ -30,7 +18,8 @@ export const api = createApi({
         try {
           await cacheDataLoaded;
 
-          const socket = getSocket();
+          const socket = getAppSocket();
+          if (!socket) throw new Error("Cannot find socket connection");
 
           socket.on(SOCKETS.ADD_LEADER, ({ username, score }) => {
             updateCachedData((draft) => {
@@ -44,7 +33,9 @@ export const api = createApi({
           await cacheEntryRemoved;
 
           socket.off(SOCKETS.ADD_LEADER);
-        } catch {}
+        } catch (err) {
+          console.error(err);
+        }
       },
     }),
     getAvailableRooms: builder.query({
@@ -56,7 +47,8 @@ export const api = createApi({
         try {
           await cacheDataLoaded;
 
-          const socket = getSocket();
+          const socket = getAppSocket();
+          if (!socket) throw new Error("Cannot find socket connection");
 
           socket.on(SOCKETS.ADD_WAITING_ROOM, (newRoom) => {
             updateCachedData((draft) => {
@@ -77,29 +69,39 @@ export const api = createApi({
 
           socket.off(SOCKETS.ADD_WAITING_ROOM);
           socket.off(SOCKETS.DELETE_WAITING_ROOM);
-        } catch {}
+        } catch (err) {
+          console.error(err);
+        }
       },
     }),
     createUser: builder.mutation({
       queryFn: (username) => {
-        const socket = getSocket();
         return {
-          data: new Promise((resolve) => {
-            socket.emit(SOCKETS.CREATE_USER, { username }, (response) =>
-              resolve(response)
-            );
+          data: new Promise((resolve, reject) => {
+            try {
+              emitAppSocketEvent(
+                SOCKETS.CREATE_USER,
+                { username },
+                (response) => resolve(response)
+              );
+            } catch (err) {
+              reject(err);
+            }
           }),
         };
       },
     }),
     createRoom: builder.mutation({
       queryFn: (data) => {
-        const socket = getSocket();
         return {
-          data: new Promise((resolve) => {
-            socket.emit(SOCKETS.CREATE_ROOM, data, (response) =>
-              resolve(response)
-            );
+          data: new Promise((resolve, reject) => {
+            try {
+              emitAppSocketEvent(SOCKETS.CREATE_ROOM, data, (response) =>
+                resolve(response)
+              );
+            } catch (err) {
+              reject(err);
+            }
           }),
         };
       },

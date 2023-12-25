@@ -1,14 +1,11 @@
 import { useEffect, useRef } from "react";
 import Modal from "react-modal";
 import { SOCKETS } from "../../const";
+import { emitAppSocketEvent } from "../../sockets/socket";
+import { useSelector } from "react-redux";
 
-function SaveScoreModal({
-  socket,
-  score,
-  isOpen,
-  setIsOpen,
-  setRestartBtnEnable,
-}) {
+function SaveScoreModal({ isOpen, setIsOpen }) {
+  const { score } = useSelector((root) => root.player);
   const checkboxRef = useRef();
 
   useEffect(() => {
@@ -19,9 +16,8 @@ function SaveScoreModal({
 
   const handleCloseModal = () => {
     if (checkboxRef.current.checked) {
-      socket.emit(SOCKETS.ADD_LEADER, { score });
+      emitAppSocketEvent(SOCKETS.ADD_LEADER, { score });
     }
-    setRestartBtnEnable(true);
     setIsOpen(false);
   };
 

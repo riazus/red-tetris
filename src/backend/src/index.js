@@ -59,6 +59,41 @@ const io = new Server(server, {
   path: "/socket",
 });
 
+const playerExit = (room, player, wasAdmin) => {
+  if (room.players.length === 0) {
+    Game.removeRoom(room.name);
+    io.emit(SOCKETS.DELETE_WAITING_ROOM, { name: room.name });
+  } else if (room.gameStarted) {
+    if (wasAdmin) {
+      room.players[0].isAdmin = true;
+      io.to(room.players[0].socketId).emit(SOCKETS.SET_ADMIN_STATUS);
+    }
+
+    if (!room.gameover) {
+      room.gameover =
+        room.players.filter((player) => !player.gameover).length < 2;
+      if (room.gameover) {
+        const winner = room.assignWinner();
+        io.to(winner.socketId).emit(SOCKETS.ASSIGN_WINNER);
+        io.to(room.name).emit(SOCKETS.GAMEOVER);
+        console.log(`Game ${room.name} finished!`);
+      }
+    }
+
+    io.to(room.name).emit(SOCKETS.DELETE_ROOM_PLAYER, {
+      username: player.username,
+    });
+  } else {
+    if (wasAdmin) {
+      room.players[0].isAdmin = true;
+      io.to(room.players[0].socketId).emit(SOCKETS.SET_ADMIN_STATUS);
+    }
+    io.to(room.name).emit(SOCKETS.DELETE_ROOM_PLAYER, {
+      username: player.username,
+    });
+  }
+};
+
 io.on("connection", async (socket) => {
   console.log(`On client with socket id ${socket.id} connected`);
 
@@ -114,10 +149,14 @@ io.on("connection", async (socket) => {
       `Player ${player.username} with socket ${socket.id} joined ${room.name} room`
     );
 
-    // Send players and room info when new player joins
-    io.to(room.name).emit(SOCKETS.UPDATE_ROOM_PLAYERS, {
-      players: room.players,
+    socket.emit(SOCKETS.ENTER_ROOM, {
+      isAdmin: player.isAdmin,
+      roomName: room.name,
+      isSolo: room.isSolo,
+      roomPlayers: room.players.filter((p) => p.username !== player.username),
     });
+    // Send players and room info when new player joins
+    socket.broadcast.to(room.name).emit(SOCKETS.ADD_ROOM_PLAYER, { player });
   });
 
   /**
@@ -126,7 +165,7 @@ io.on("connection", async (socket) => {
   socket.on(SOCKETS.EXIT_ROOM, () => {
     const player = Player.getBySocketId(socket.id);
     const room = Room.getByName(player?.roomName);
-    let wasAdmin = false;
+    const wasAdmin = player.isAdmin;
 
     if (!exitRoomArgsValid(room, player)) return;
 
@@ -140,41 +179,11 @@ io.on("connection", async (socket) => {
     player.isWinner = false;
 
     if (player.isAdmin) {
-      wasAdmin = true;
       player.isAdmin = false;
     }
 
     socket.leave(room.name);
-
-    if (room.players.length === 0) {
-      Game.removeRoom(room.name);
-      io.emit(SOCKETS.DELETE_WAITING_ROOM, { name: room.name });
-    } else if (room.gameStarted) {
-      if (wasAdmin) room.players[0].isAdmin = true;
-
-      if (!room.gameover) {
-        room.gameover =
-          room.players.filter((player) => !player.gameover).length < 2;
-        if (room.gameover) {
-          room.assignWinner();
-          console.log(`Game ${room.name} finished!`);
-          io.to(room.name).emit(SOCKETS.GAMEOVER, {
-            players: room.players,
-            endGame: room.gameover,
-          });
-        }
-      }
-
-      io.to(room.name).emit(SOCKETS.UPDATE_ROOM_PLAYERS, {
-        players: room.players,
-      });
-    } else {
-      if (wasAdmin) room.players[0].isAdmin = true;
-      // Send players and room info when player left
-      io.to(room.name).emit(SOCKETS.UPDATE_ROOM_PLAYERS, {
-        players: room.players,
-      });
-    }
+    playerExit(room, player, wasAdmin);
   });
 
   /**
@@ -199,7 +208,7 @@ io.on("connection", async (socket) => {
   /**
    * Gameover for player
    */
-  socket.on(SOCKETS.GAMEOVER, () => {
+  socket.on(SOCKETS.PLAYER_GAMEOVER, () => {
     const player = Player.getBySocketId(socket.id);
     const room = Room.getByName(player.roomName);
 
@@ -209,15 +218,16 @@ io.on("connection", async (socket) => {
     room.gameover =
       room.players.filter((player) => !player.gameover).length < 2;
 
+    socket
+      .to(room.name)
+      .emit(SOCKETS.PLAYER_GAMEOVER, { username: player.username });
+
     if (room.gameover) {
-      room.assignWinner();
+      const winner = room.assignWinner();
+      io.to(winner.socketId).emit(SOCKETS.ASSIGN_WINNER);
+      io.to(room.name).emit(SOCKETS.GAMEOVER);
       console.log(`Game ${room.name} finished!`);
     }
-
-    io.to(room.name).emit(SOCKETS.GAMEOVER, {
-      players: room.players,
-      endGame: room.gameover,
-    });
   });
 
   /**
@@ -231,11 +241,13 @@ io.on("connection", async (socket) => {
 
     room.restartGame();
 
-    io.emit(SOCKETS.ADD_WAITING_ROOM, { name: room.name });
-    io.to(room.name).emit(SOCKETS.UPDATE_ROOM_PLAYERS, {
-      players: room.players,
+    room.players.forEach((p) => {
+      io.to(p.socketId).emit(SOCKETS.RESTART_GAME, {
+        isAdmin: p.isAdmin,
+        players: room.players.filter((el) => el.socketId !== p.socketId),
+      });
     });
-    io.to(room.name).emit(SOCKETS.RESTART_GAME);
+    io.emit(SOCKETS.ADD_WAITING_ROOM, { name: room.name });
   });
 
   /**
@@ -309,31 +321,10 @@ io.on("connection", async (socket) => {
     if (!room) {
       Player.deletePlayer(player.socketId);
     } else {
+      const wasAdmin = player.isAdmin;
       socket.leave(room.name);
       Game.removePlayer(player.socketId, room);
-
-      if (room.players.length === 0) {
-        Game.removeRoom(room.name);
-        io.emit(SOCKETS.DELETE_WAITING_ROOM, { name: room.name });
-      } else if (room.gameStarted) {
-        room.players[0].isAdmin = true;
-        room.gameover =
-          room.players.filter((player) => !player.gameover).length < 2;
-        if (room.gameover) {
-          room.assignWinner();
-          console.log(`Game ${room.name} finished!`);
-          io.to(room.name).emit(SOCKETS.GAMEOVER, {
-            players: room.players,
-            endGame: room.gameover,
-          });
-        }
-      } else {
-        room.players[0].isAdmin = true;
-        // Send players and room info when player left
-        io.to(room.name).emit(SOCKETS.UPDATE_ROOM_PLAYERS, {
-          players: room.players,
-        });
-      }
+      playerExit(room, player, wasAdmin);
     }
 
     console.log("On player", player.username, "leave game");

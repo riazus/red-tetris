@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 
 function useNavigate() {
-  const { username } = useSelector((state) => state.userState);
+  const { username } = useSelector((state) => state.player);
 
   const navigate = (path) => {
     window.history.pushState({}, "", path);

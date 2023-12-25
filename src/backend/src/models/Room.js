@@ -32,7 +32,7 @@ class Room {
 
     if (playersLeft.length === 1) {
       const index = this.players.findIndex(
-        (player) => player.id === playersLeft[0].id
+        (player) => player.socketId === playersLeft[0].socketId
       );
 
       this.players[index].isWinner = true;
