@@ -1,10 +1,7 @@
-import { useSelector } from "react-redux";
 import { emitAppSocketEvent } from "../../sockets/socket";
 import { SOCKETS } from "../../const";
 
-function WaitingRoom({ players }) {
-  const { isAdmin } = useSelector((root) => root.player);
-  const { isSolo } = useSelector((root) => root.game);
+function WaitingRoom({ players, isAdmin, isSolo }) {
 
   const launchGame = () => {
     emitAppSocketEvent(SOCKETS.START_GAME);

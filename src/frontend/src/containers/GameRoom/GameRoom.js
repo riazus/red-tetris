@@ -9,11 +9,13 @@ import {
   removeGameListeners,
 } from "../../sockets/listeners/gameListeners";
 import { useDispatch, useSelector } from "react-redux";
-import { exitRoom, setRoomName } from "../../app/slices/playerSlice";
+import { exitRoom } from "../../app/slices/playerSlice";
 import { clearRoom } from "../../app/slices/gameSlice";
 
 function GameRoomForm({ roomName, playerName }) {
-  const { players, isStarted, isGameover } = useSelector((root) => root.game);
+  const { players, isStarted, isGameover, isSolo } = useSelector(
+    (root) => root.game
+  );
   const { isAdmin, isWinner } = useSelector((root) => root.player);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -55,7 +57,7 @@ function GameRoomForm({ roomName, playerName }) {
       {isStarted ? (
         <MainGameForm players={players} />
       ) : (
-        <WaitingRoom players={players} />
+        <WaitingRoom players={players} isAdmin={isAdmin} isSolo={isSolo} />
       )}
     </div>
   );
