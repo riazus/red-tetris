@@ -10,6 +10,9 @@ describe("Player", () => {
       roomName: "",
       score: 0,
       isAdmin: false,
+      gameover: false,
+      isWinner: false,
+      spectrum: "",
     });
   });
 
@@ -30,14 +33,17 @@ describe("Player", () => {
   });
 
   it("should add roomName to player", () => {
-    expect(newPlayer.addRoomName("room-name")).toEqual({...newPlayer, roomName: "room-name"});
-  })
+    expect(newPlayer.addRoomName("room-name")).toEqual({
+      ...newPlayer,
+      roomName: "room-name",
+    });
+  });
 
   it("should return false for deletePlayer with invalid socketId", () => {
     expect(Player.deletePlayer("no-such-socket-id")).toEqual(false);
-  })
+  });
 
   it("should return true for deletePlayer with valid socketId", () => {
     expect(Player.deletePlayer("test_socket_id")).toEqual(true);
-  })
+  });
 });

@@ -21,3 +21,5 @@ export const SOCKETS = {
   ASSIGN_WINNER: "assign_winner",
   PLAYER_GAMEOVER: "player_gameover",
 };
+
+export const API_BASE_URL = `http://localhost:${process.env.API_PORT ?? 5000}`;

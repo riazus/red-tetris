@@ -30,7 +30,7 @@ const exitRoomArgsValid = (room, player) => {
 };
 
 const enterRoomArgsValid = (room, player) => {
-  if (!player || !room) {
+  if (!player || !room || room.gameStarted) {
     return false;
   }
 
@@ -46,10 +46,58 @@ const enterRoomArgsValid = (room, player) => {
   return true;
 };
 
+const startGameArgsValid = (room, player) => {
+  return (
+    room && player && player.isAdmin && playerAlreadyInRoom(player.socketId)
+  );
+};
+
+const updateSpectrumArgsValid = (room, player, spectrum) => {
+  return (
+    room &&
+    player &&
+    spectrum &&
+    room.gameStarted &&
+    playerAlreadyInRoom(player.socketId)
+  );
+};
+
+const gameoverArgsValid = (room, player) => {
+  return (
+    room &&
+    player &&
+    room.gameStarted &&
+    playerAlreadyInRoom(player.socketId) &&
+    !player.gameover
+  );
+};
+
+const restartGameArgsValid = (room, player) => {
+  return room && player && player.isAdmin && room.gameStarted && room.gameover;
+};
+
+const updateScoreArgsValid = (room, player, score) => {
+  return room && player && score && room.gameStarted && !room.gameover;
+};
+
+const addLeaderArgsValid = (room, player, score) => {
+  return room && player && score && room.gameStarted && room.gameover;
+};
+
 const playerAlreadyInRoom = (socketId) => {
   return rooms.some((room) =>
     room.players.some((player) => player.socketId === socketId)
   );
 };
 
-export { createRoomArgsValid, enterRoomArgsValid, exitRoomArgsValid };
+export {
+  createRoomArgsValid,
+  enterRoomArgsValid,
+  exitRoomArgsValid,
+  startGameArgsValid,
+  updateSpectrumArgsValid,
+  gameoverArgsValid,
+  restartGameArgsValid,
+  updateScoreArgsValid,
+  addLeaderArgsValid,
+};

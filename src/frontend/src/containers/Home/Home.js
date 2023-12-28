@@ -3,7 +3,7 @@ import Link from "../../components/Link";
 import UsernameForm from "../UsernameForm/UsernameForm";
 
 function Home() {
-  const { username } = useSelector((state) => state.userState);
+  const { username } = useSelector((state) => state.player);
 
   return (
     <>
@@ -14,7 +14,8 @@ function Home() {
       ) : (
         <>
           <h2>Hello, {username}</h2>
-          <Link to="#leaderboard">Link to Leaderboard</Link>
+          <Link to="#leaderboard">Link to the Leaderboard</Link> <br />
+          <Link to="#rooms">Link to the Avaialable Rooms</Link>
         </>
       )}
     </>

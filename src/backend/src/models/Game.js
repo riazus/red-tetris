@@ -16,7 +16,7 @@ class Game {
 
   static getWaitingRoomNames() {
     const roomObjects = this.getWaitingRooms();
-    return roomObjects?.map((room) => room.name);
+    return roomObjects?.map((room) => ({ name: room.name }));
   }
 
   static removeRoom(roomName) {
@@ -24,6 +24,7 @@ class Game {
 
     if (index !== -1) {
       rooms.splice(index, 1);
+      console.log(`Room ${roomName} was deleted`);
       return true;
     }
     return false;
