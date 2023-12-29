@@ -51,7 +51,7 @@ function MainGameForm({ players }) {
     dispatch(setIsGameover(true));
   };
 
-  const controlDisabled = () => (isStarted && isGameover) || isPlayerGameover;
+  //const controlDisabled = () => (isStarted && isGameover) || isPlayerGameover;
 
   return (
     <div>

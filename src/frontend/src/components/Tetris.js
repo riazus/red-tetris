@@ -1,35 +1,39 @@
-import React, { useState } from 'react';
-import { createStage, checkCollision } from '../gameHelpers';
-import { StyledTetrisWrapper, StyledTetris } from './styles/StyledTetris';
-import { useInterval } from '../hooks/useInterval';
-import { usePlayer } from '../hooks/usePlayer';
-import { useStage } from '../hooks/useStage';
-import { useGameStatus } from '../hooks/useGameStatus';
+import React, { useState } from "react";
+import { createStage, checkCollision } from "../gameHelpers";
+import { StyledTetrisWrapper, StyledTetris } from "./styles/StyledTetris";
+import { useInterval } from "../hooks/useInterval";
+import { usePlayer } from "../hooks/usePlayer";
+import { useStage } from "../hooks/useStage";
+import { useGameStatus } from "../hooks/useGameStatus";
+import { useDispatch, useSelector } from "react-redux";
+import { emitAppSocketEvent } from "../sockets/socket";
+import { SOCKETS } from "../const";
+import { setIsGameover } from "../app/slices/playerSlice";
 
-import Stage from './Stage';
-import Display from './Display';
-import StartButton from './StartButton';
+import Stage from "./Stage";
+import Display from "./Display";
+import StartButton from "./StartButton";
 
 const Tetris = () => {
   const [dropTime, setDropTime] = useState(null);
-  const [gameOver, setGameOver] = useState(false);
+  const { isGameover, score } = useSelector((root) => root.player);
+  const dispatch = useDispatch();
 
   const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer();
   const [stage, setStage, rowsCleared] = useStage(player, resetPlayer);
-  const [score, setScore, rows, setRows, level, setLevel] = useGameStatus(
-    rowsCleared
-  );
+  const [rows, setRows, level, setLevel] =
+    useGameStatus(rowsCleared);
 
-  console.log('re-render');
+  console.log("re-render");
 
-  const movePlayer = dir => {
+  const movePlayer = (dir) => {
     if (!checkCollision(player, stage, { x: dir, y: 0 })) {
       updatePlayerPos({ x: dir, y: 0 });
     }
   };
 
   const keyUp = ({ keyCode }) => {
-    if (!gameOver) {
+    if (!isGameover) {
       if (keyCode === 40) {
         setDropTime(1000 / (level + 1));
       }
@@ -40,15 +44,13 @@ const Tetris = () => {
     setStage(createStage());
     setDropTime(1000);
     resetPlayer();
-    setScore(0);
     setLevel(0);
     setRows(0);
-    setGameOver(false);
   };
 
   const drop = () => {
     if (rows > (level + 1) * 10) {
-      setLevel(prev => prev + 1);
+      setLevel((prev) => prev + 1);
       setDropTime(1000 / (level + 1) + 200);
     }
 
@@ -56,8 +58,8 @@ const Tetris = () => {
       updatePlayerPos({ x: 0, y: 1, collided: false });
     } else {
       if (player.pos.y < 1) {
-        console.log('GAME OVER!!!');
-        setGameOver(true);
+        console.log("GAME OVER!!!");
+        handleGameover();
         setDropTime(null);
       }
       updatePlayerPos({ x: 0, y: 0, collided: true });
@@ -73,8 +75,13 @@ const Tetris = () => {
     drop();
   }, dropTime);
 
+  const handleGameover = () => {
+    emitAppSocketEvent(SOCKETS.PLAYER_GAMEOVER);
+    dispatch(setIsGameover(true));
+  };
+
   const move = ({ keyCode }) => {
-    if (!gameOver) {
+    if (!isGameover) {
       if (keyCode === 37) {
         movePlayer(-1);
       } else if (keyCode === 39) {
@@ -91,14 +98,14 @@ const Tetris = () => {
     <StyledTetrisWrapper
       role="button"
       tabIndex="0"
-      onKeyDown={e => move(e)}
+      onKeyDown={(e) => move(e)}
       onKeyUp={keyUp}
     >
       <StyledTetris>
         <Stage stage={stage} />
         <aside>
-          {gameOver ? (
-            <Display gameOver={gameOver} text="Game Over" />
+          {isGameover ? (
+            <Display isGameover={isGameover} text="Game Over" />
           ) : (
             <div>
               <Display text={`Score: ${score}`} />
