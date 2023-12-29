@@ -13,6 +13,8 @@ const createRoomArgsValid = (socket, roomName) => {
     message =
       "This user cannot create new room, cause he is already in room. " +
       "First leave from room";
+  } else if (roomName.length <= 0) {
+    message = "Invalid room name";
   } else {
     valid = true;
   }

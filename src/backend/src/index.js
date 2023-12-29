@@ -223,7 +223,7 @@ io.on("connection", async (socket) => {
       .emit(SOCKETS.PLAYER_GAMEOVER, { username: player.username });
 
     if (room.gameover) {
-      const winner = room.assignWinner();
+      const winner = room.isSolo ? player : room.assignWinner();
       io.to(winner.socketId).emit(SOCKETS.ASSIGN_WINNER);
       io.to(room.name).emit(SOCKETS.GAMEOVER);
       console.log(`Game ${room.name} finished!`);
@@ -277,6 +277,7 @@ io.on("connection", async (socket) => {
 
     if (!updateScoreArgsValid(room, player, score)) return;
 
+    console.log(`Update score for ${player.username}: new score: ${score}`);
     player.score = score;
 
     callback({ score });
