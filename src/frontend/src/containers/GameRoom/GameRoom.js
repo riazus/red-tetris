@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { SOCKETS } from "../../const";
 import WaitingRoom from "../WaitingRoom/WaitingRoom";
 import MainGameForm from "../MainGameForm/MainGameForm";
@@ -48,7 +48,7 @@ function GameRoomForm({ roomName, playerName }) {
       <h1>Game Room</h1>
       <h4>Room Name: {roomName}</h4>
       <h4>Player Name: {playerName}</h4>
-      {isWinner && <h5>Congrats you're winner!</h5>}
+      {isWinner && !isSolo && <h5>Congrats you're winner!</h5>}
       <button onClick={handleExit}>Exit from room</button>
       {isRestartBtnEnable() && (
         <button onClick={restartGame}>Restart Game</button>
