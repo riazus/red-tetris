@@ -8,6 +8,7 @@ import {
   updateScore,
   updateSpectrum,
 } from "../../app/slices/playerSlice";
+import Tetris from "../../components/Tetris";
 
 function MainGameForm({ players }) {
   const {
@@ -50,7 +51,7 @@ function MainGameForm({ players }) {
     dispatch(setIsGameover(true));
   };
 
-  const controlDisabled = () => (isStarted && isGameover) || isPlayerGameover;
+  //const controlDisabled = () => (isStarted && isGameover) || isPlayerGameover;
 
   return (
     <div>
@@ -60,7 +61,8 @@ function MainGameForm({ players }) {
         setIsOpen={setIsModalOpen}
       />
 
-      <p>Score: {score}</p>
+      <Tetris />
+      {/* <p>Score: {score}</p>
       <input
         type="text"
         value={spectrum}
@@ -85,7 +87,7 @@ function MainGameForm({ players }) {
             </li>
           );
         })}
-      </ul>
+      </ul> */}
     </div>
   );
 }
