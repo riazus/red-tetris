@@ -15,7 +15,7 @@ import Display from "./Display";
 import StartButton from "./StartButton";
 
 const Tetris = () => {
-  const [dropTime, setDropTime] = useState(null);
+  const [dropTime, setDropTime] = useState(NaN);
   const [startGameBtnAvailable, setStartGameBtnAvaialable] = useState(true);
   const { isGameover, score } = useSelector((root) => root.player);
   const dispatch = useDispatch();
