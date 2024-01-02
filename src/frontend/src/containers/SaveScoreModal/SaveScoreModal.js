@@ -15,7 +15,7 @@ function SaveScoreModal({ isOpen, setIsOpen }) {
   }, [isOpen]);
 
   const handleCloseModal = () => {
-    if (checkboxRef.current.checked) {
+    if (checkboxRef && checkboxRef.current.checked) {
       emitAppSocketEvent(SOCKETS.ADD_LEADER, { score });
     }
     setIsOpen(false);
