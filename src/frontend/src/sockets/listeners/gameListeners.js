@@ -9,6 +9,7 @@ import {
   updatePlayersSpectrum,
   updatePlayersGameover,
   restartGame,
+  setTetrominos,
 } from "../../app/slices/gameSlice";
 import {
   restartPlayerGame,
@@ -41,7 +42,10 @@ export const gameListeners = (dispatch) => {
     dispatch(deletePlayer(username))
   );
 
-  socket.on(SOCKETS.GAME_STARTED, () => dispatch(setIsStarted(true)));
+  socket.on(SOCKETS.GAME_STARTED, (tetrominos) => {
+    dispatch(setIsStarted(true));
+    dispatch(setTetrominos(tetrominos));
+  });
 
   socket.on(SOCKETS.RESTART_GAME, ({ isAdmin, players }) => {
     dispatch(restartPlayerGame(isAdmin));

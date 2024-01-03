@@ -10,13 +10,14 @@ import {
 } from "../../app/slices/playerSlice";
 import Tetris from "../../components/Tetris";
 
+/**
+ * Renders tetris and modal form
+ * @param {*} players Opponents in the room
+ * @returns 
+ */
 function MainGameForm({ players }) {
-  const {
-    score,
-    spectrum,
-    isGameover: isPlayerGameover,
-  } = useSelector((root) => root.player);
-  const { isStarted, isGameover } = useSelector((root) => root.game);
+  const { score } = useSelector((root) => root.player);
+  const { isGameover } = useSelector((root) => root.game);
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -26,6 +27,7 @@ function MainGameForm({ players }) {
     }
   }, [isGameover]);
 
+  // TODO
   const handleUpdateSpectrum = (e) => {
     emitAppSocketEvent(
       SOCKETS.UPDATE_SPECTRUM,
@@ -36,6 +38,7 @@ function MainGameForm({ players }) {
     );
   };
 
+  // TODO
   const handleUpdateScore = () => {
     emitAppSocketEvent(
       SOCKETS.UPDATE_SCORE,
@@ -46,13 +49,6 @@ function MainGameForm({ players }) {
     );
   };
 
-  const handleGameover = () => {
-    emitAppSocketEvent(SOCKETS.PLAYER_GAMEOVER);
-    dispatch(setIsGameover(true));
-  };
-
-  //const controlDisabled = () => (isStarted && isGameover) || isPlayerGameover;
-
   return (
     <div>
       <SaveScoreModal
@@ -62,32 +58,6 @@ function MainGameForm({ players }) {
       />
 
       <Tetris />
-      {/* <p>Score: {score}</p>
-      <input
-        type="text"
-        value={spectrum}
-        onChange={handleUpdateSpectrum}
-        disabled={controlDisabled()}
-      ></input>
-      <button disabled={controlDisabled()} onClick={handleUpdateScore}>
-        Update score
-      </button>
-      <button disabled={controlDisabled()} onClick={handleGameover}>
-        Gameover
-      </button>
-      <ul>
-        {players.map((p, i) => {
-          return (
-            <li key={i}>
-              <p>
-                {p.username} score: {p.score}
-              </p>
-              {p.gameover && <p>Player lost game</p>}
-              <input value={p.spectrum} disabled></input>
-            </li>
-          );
-        })}
-      </ul> */}
     </div>
   );
 }

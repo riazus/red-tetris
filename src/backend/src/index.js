@@ -18,6 +18,7 @@ import {
   updateScoreArgsValid,
   updateSpectrumArgsValid,
 } from "./helpers/socketValidators.js";
+import { random20Tetrominos } from "./helpers/tetrominos.js";
 
 const PORT = process.env.BACKEND_PORT || 5000;
 
@@ -201,8 +202,7 @@ io.on("connection", async (socket) => {
     io.emit(SOCKETS.DELETE_WAITING_ROOM, { name: room.name });
 
     // Send to the players that game started
-    // TODO: Send to the player some stack of pieces
-    io.to(room.name).emit(SOCKETS.GAME_STARTED);
+    io.to(room.name).emit(SOCKETS.GAME_STARTED, random20Tetrominos());
   });
 
   /**

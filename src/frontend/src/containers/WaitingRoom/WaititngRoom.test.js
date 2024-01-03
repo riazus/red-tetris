@@ -7,13 +7,11 @@ const players = [
   {
     username: "test",
     score: 50,
-    spectrum: "lolol",
     gameover: false,
   },
   {
     username: "test1",
     score: 60,
-    spectrum: "lololol",
     gameover: false,
   },
 ];

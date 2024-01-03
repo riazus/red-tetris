@@ -3,8 +3,6 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   username: "",
   score: 0,
-  // TODO
-  spectrum: "",
   isAdmin: false,
   isGameover: false,
   isWinner: false,

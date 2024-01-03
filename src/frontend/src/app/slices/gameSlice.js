@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   // all players of the room except current
   players: [],
+  tetrominos: [],
   isSolo: false,
   isStarted: false,
   isGameover: false,
@@ -57,6 +58,9 @@ export const gameSlice = createSlice({
       state.isGameover = false;
       state.players = [...action.payload];
     },
+    setTetrominos: (state, action) => {
+      state.tetrominos = action.payload;
+    },
   },
 });
 
@@ -74,4 +78,5 @@ export const {
   updatePlayersGameover,
   clearRoom,
   restartGame,
+  setTetrominos,
 } = gameSlice.actions;
