@@ -1,18 +1,21 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsGameover } from "../app/slices/playerSlice";
-import { SOCKETS } from "../const";
-import { checkCollision, createStage } from "../gameHelpers";
-import { useGameStatus } from "../hooks/useGameStatus";
-import { useInterval } from "../hooks/useInterval";
-import { usePlayer } from "../hooks/usePlayer";
-import { useStage } from "../hooks/useStage";
-import { emitAppSocketEvent } from "../sockets/socket";
-import { StyledTetris, StyledTetrisWrapper } from "./styles/StyledTetris";
+import { setIsGameover } from "../../app/slices/playerSlice";
+import {
+  StyledTetris,
+  StyledTetrisWrapper,
+} from "../../components/styles/StyledTetris";
+import { SOCKETS } from "../../const";
+import { checkCollision, createStage } from "../../gameHelpers";
+import { useGameStatus } from "../../hooks/useGameStatus";
+import { useInterval } from "../../hooks/useInterval";
+import { usePlayer } from "../../hooks/usePlayer";
+import { useStage } from "../../hooks/useStage";
+import { emitAppSocketEvent } from "../../sockets/socket";
 
-import Display from "./Display";
-import Stage from "./Stage";
-import StartButton from "./StartButton";
+import Display from "../../components/Display";
+import Stage from "../../components/Stage";
+import StartButton from "../../components/StartButton";
 
 const Tetris = () => {
   const [dropTime, setDropTime] = useState(NaN);

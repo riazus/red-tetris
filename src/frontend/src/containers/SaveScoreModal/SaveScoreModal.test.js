@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { store } from "../../app/store";
 import SaveScoreModal from "./SaveScoreModal";
@@ -9,11 +9,11 @@ const mockSocket = {
 };
 
 it("should have save checkbox", () => {
-  const { getByRole } = render(
+  render(
     <Provider store={store}>
       <SaveScoreModal isOpen={true} socket={mockSocket} />
     </Provider>
   );
 
-  expect(getByRole("checkbox")).toBeInTheDocument();
+  expect(screen.getByRole("checkbox")).toBeInTheDocument();
 });

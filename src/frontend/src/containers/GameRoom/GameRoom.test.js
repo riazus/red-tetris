@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { store } from "../../app/store";
 import GameRoomForm from "./GameRoom";
@@ -14,11 +14,11 @@ jest.mock("../../sockets/listeners/gameListeners.js", () => {
 });
 
 it("should have exit room button", () => {
-  const { getByRole } = render(
+  render(
     <Provider store={store}>
       <GameRoomForm />
     </Provider>
   );
 
-  expect(getByRole("button")).toBeInTheDocument();
+  expect(screen.getByRole("button")).toBeInTheDocument();
 });
