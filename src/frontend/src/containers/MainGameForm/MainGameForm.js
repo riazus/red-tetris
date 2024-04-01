@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
-import { SOCKETS } from "../../const";
-import SaveScoreModal from "../SaveScoreModal/SaveScoreModal";
-import { emitAppSocketEvent } from "../../sockets/socket";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setIsGameover,
-  updateScore,
-  updateSpectrum,
-} from "../../app/slices/playerSlice";
+import { updateScore, updateSpectrum } from "../../app/slices/playerSlice";
 import Tetris from "../../components/Tetris";
+import { SOCKETS } from "../../const";
+import { emitAppSocketEvent } from "../../sockets/socket";
+import SaveScoreModal from "../SaveScoreModal/SaveScoreModal";
 
 /**
  * Renders tetris and modal form
  * @param {*} players Opponents in the room
- * @returns 
+ * @returns
  */
 function MainGameForm({ players }) {
   const { score } = useSelector((root) => root.player);

@@ -1,8 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { api } from "./api/api";
 import { rtkQueryErrorMiddleware } from "./middlewares/rtkQueryErrorMiddleware";
-import userReducer from "./slices/playerSlice";
 import gameReducer from "./slices/gameSlice";
+import userReducer from "./slices/playerSlice";
 
 export const store = configureStore({
   reducer: {
