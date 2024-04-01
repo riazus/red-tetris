@@ -45,9 +45,11 @@ function GameRoomForm({ roomName, playerName }) {
       <h4>Room Name: {roomName}</h4>
       <h4>Player Name: {playerName}</h4>
       {isWinner && !isSolo && <h5>Congrats you're winner!</h5>}
-      <button onClick={handleExit}>Exit from room</button>
+      <button data-testid="exit-room-button" onClick={handleExit}>
+        Exit from room
+      </button>
       {isRestartBtnEnable && (
-        <button onClick={() => emitAppSocketEvent(SOCKETS.RESTART_GAME)}>
+        <button data-testid="restart-game-button" onClick={() => emitAppSocketEvent(SOCKETS.RESTART_GAME)}>
           Restart Game
         </button>
       )}
