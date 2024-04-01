@@ -1,15 +1,15 @@
 import {
   addPlayer,
   deletePlayer,
-  setRoomPlayers,
-  setIsStarted,
+  restartGame,
   setIsGameover,
   setIsSolo,
+  setIsStarted,
+  setRoomPlayers,
+  setTetrominos,
+  updatePlayersGameover,
   updatePlayersScore,
   updatePlayersSpectrum,
-  updatePlayersGameover,
-  restartGame,
-  setTetrominos,
 } from "../../app/slices/gameSlice";
 import {
   restartPlayerGame,
@@ -22,7 +22,6 @@ import { getAppSocket } from "../socket";
 
 export const gameListeners = (dispatch) => {
   const socket = getAppSocket();
-  if (!socket) return;
 
   socket.on(
     SOCKETS.ENTER_ROOM,

@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import { createStage, checkCollision } from "../gameHelpers";
-import { StyledTetrisWrapper, StyledTetris } from "./styles/StyledTetris";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsGameover } from "../app/slices/playerSlice";
+import { SOCKETS } from "../const";
+import { checkCollision, createStage } from "../gameHelpers";
+import { useGameStatus } from "../hooks/useGameStatus";
 import { useInterval } from "../hooks/useInterval";
 import { usePlayer } from "../hooks/usePlayer";
 import { useStage } from "../hooks/useStage";
-import { useGameStatus } from "../hooks/useGameStatus";
-import { useDispatch, useSelector } from "react-redux";
 import { emitAppSocketEvent } from "../sockets/socket";
-import { SOCKETS } from "../const";
-import { setIsGameover } from "../app/slices/playerSlice";
+import { StyledTetris, StyledTetrisWrapper } from "./styles/StyledTetris";
 
-import Stage from "./Stage";
 import Display from "./Display";
+import Stage from "./Stage";
 import StartButton from "./StartButton";
 
 const Tetris = () => {
@@ -23,8 +23,6 @@ const Tetris = () => {
   const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer();
   const [stage, setStage, rowsCleared] = useStage(player, resetPlayer);
   const [rows, setRows, level, setLevel] = useGameStatus(rowsCleared);
-
-  console.log("re-render");
 
   const movePlayer = (dir) => {
     if (!checkCollision(player, stage, { x: dir, y: 0 })) {
