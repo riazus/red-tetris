@@ -20,7 +20,6 @@ export const api = createApi({
           await cacheDataLoaded;
 
           const socket = getAppSocket();
-          if (!socket) throw new Error("Cannot find socket connection");
 
           socket.on(SOCKETS.ADD_LEADER, ({ username, score }) => {
             updateCachedData((draft) => {
@@ -49,7 +48,6 @@ export const api = createApi({
           await cacheDataLoaded;
 
           const socket = getAppSocket();
-          if (!socket) throw new Error("Cannot find socket connection");
 
           socket.on(SOCKETS.ADD_WAITING_ROOM, (newRoom) => {
             updateCachedData((draft) => {
