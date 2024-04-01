@@ -10,6 +10,7 @@ jest.mock("./sockets/socket.js", () => {
   const initializeAppSocket = jest.fn(() => socket);
   const getAppSocket = jest.fn(() => socket);
   const connectAppSocket = jest.fn();
+  const disconnectAppSocket = jest.fn();
   const emitAppSocketEvent = jest.fn();
 
   return {
@@ -17,5 +18,6 @@ jest.mock("./sockets/socket.js", () => {
     getAppSocket,
     connectAppSocket,
     emitAppSocketEvent,
+    disconnectAppSocket
   };
 });
