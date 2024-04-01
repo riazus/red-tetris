@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { setUsername } from "../../app/slices/playerSlice";
 import { API_BASE_URL, SOCKETS } from "../../const";
 import { emitAppSocketEvent, getAppSocket } from "../../sockets/socket";
 
@@ -75,14 +76,21 @@ export const api = createApi({
       },
     }),
     createUser: builder.mutation({
-      queryFn: (username) => {
+      queryFn: (username, { dispatch }) => {
         return {
           data: new Promise((resolve, reject) => {
             try {
               emitAppSocketEvent(
                 SOCKETS.CREATE_USER,
                 { username },
-                (response) => resolve(response)
+                (response) => {
+                  if (response.isUsernameValid) {
+                    dispatch(setUsername(username));
+                    resolve(response);
+                  } else {
+                    reject("Username invalid!");
+                  }
+                }
               );
             } catch (err) {
               reject(err);

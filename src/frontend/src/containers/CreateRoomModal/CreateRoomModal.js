@@ -5,14 +5,8 @@ import { useCreateRoomMutation } from "../../app/api/api";
 function CreateRoomModal({ isOpen, onRequestClose }) {
   const [roomName, setRoomName] = useState("");
   const [isSolo, setIsSolo] = useState(false);
-  const [
-    createRoom,
-    {
-      data: createRoomResp,
-      isLoading: isCreatRoomLoading,
-      isSuccess: isCreateRoomSuccess,
-    },
-  ] = useCreateRoomMutation();
+  const [createRoom, { data: createRoomResp, isSuccess: isCreateRoomSuccess }] =
+    useCreateRoomMutation();
 
   useEffect(() => {
     if (isCreateRoomSuccess) {
@@ -26,11 +20,7 @@ function CreateRoomModal({ isOpen, onRequestClose }) {
         onRequestClose();
       }
     }
-  }, [isCreatRoomLoading]);
-
-  const handleCreate = () => {
-    createRoom({ roomName, isSolo });
-  };
+  }, [isCreateRoomSuccess, createRoomResp, onRequestClose]);
 
   return (
     <Modal
@@ -56,7 +46,7 @@ function CreateRoomModal({ isOpen, onRequestClose }) {
           onChange={() => setIsSolo(!isSolo)}
         />
       </label>
-      <button onClick={handleCreate}>Create</button>
+      <button onClick={() => createRoom({ roomName, isSolo })}>Create</button>
     </Modal>
   );
 }

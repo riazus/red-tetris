@@ -1,10 +1,10 @@
+import { useEffect } from "react";
 import "./App.css";
 import HashRouter from "./components/HashRouter";
-import Home from "./containers/Home/Home";
 import GameRoomForm from "./containers/GameRoom/GameRoom";
+import Home from "./containers/Home/Home";
 import Leaderboard from "./containers/Leaderboard/Leaderboard";
 import RoomList from "./containers/RoomList/RoomList";
-import { useEffect } from "react";
 import {
   connectAppSocket,
   disconnectAppSocket,
@@ -31,20 +31,12 @@ const router = [
 ];
 
 function App() {
-  const appSocket = initializeAppSocket();
-
   useEffect(() => {
-    if (!appSocket) return;
+    initializeAppSocket();
 
-    const connect = async () => {
-      try {
-        await connectAppSocket();
-      } catch (err) {
-        console.error("Error connecting to sockets", err);
-      }
-    };
-
-    connect();
+    (async () => {
+      await connectAppSocket();
+    })();
 
     return () => {
       disconnectAppSocket();

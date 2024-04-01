@@ -1,7 +1,7 @@
-import { Socket, io } from "socket.io-client";
+import { io } from "socket.io-client";
 import { API_BASE_URL } from "../const";
 
-let appSocket = Socket | undefined;
+let appSocket;
 
 export const initializeAppSocket = () => {
   if (!appSocket) {
@@ -13,8 +13,6 @@ export const initializeAppSocket = () => {
 export const connectAppSocket = () => {
   return new Promise((resolve, reject) => {
     if (appSocket && !appSocket.connected) {
-      appSocket.connect();
-
       appSocket.on("connect", () => {
         resolve();
       });
@@ -22,7 +20,10 @@ export const connectAppSocket = () => {
       appSocket.on("connect_error", (error) => {
         reject(error);
       });
+
+      appSocket.connect();
     }
+
     resolve();
   });
 };
@@ -33,7 +34,13 @@ export const disconnectAppSocket = () => {
   }
 };
 
-export const getAppSocket = () => appSocket;
+export const getAppSocket = () => {
+  if (!appSocket || !appSocket.connected) {
+    throw new Error("Cannot find socket connection");
+  }
+
+  return appSocket;
+};
 
 export const emitAppSocketEvent = (event, payload, callback) => {
   const appSocket = getAppSocket();

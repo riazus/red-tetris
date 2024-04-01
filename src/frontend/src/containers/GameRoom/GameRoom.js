@@ -1,16 +1,16 @@
 import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { clearRoom } from "../../app/slices/gameSlice";
+import { exitRoom } from "../../app/slices/playerSlice";
 import { SOCKETS } from "../../const";
-import WaitingRoom from "../WaitingRoom/WaitingRoom";
-import MainGameForm from "../MainGameForm/MainGameForm";
 import useNavigate from "../../hooks/useNavigate";
-import { emitAppSocketEvent } from "../../sockets/socket";
 import {
   gameListeners,
   removeGameListeners,
 } from "../../sockets/listeners/gameListeners";
-import { useDispatch, useSelector } from "react-redux";
-import { exitRoom } from "../../app/slices/playerSlice";
-import { clearRoom } from "../../app/slices/gameSlice";
+import { emitAppSocketEvent } from "../../sockets/socket";
+import MainGameForm from "../MainGameForm/MainGameForm";
+import WaitingRoom from "../WaitingRoom/WaitingRoom";
 
 function GameRoomForm({ roomName, playerName }) {
   const { players, isStarted, isGameover, isSolo } = useSelector(
@@ -28,7 +28,7 @@ function GameRoomForm({ roomName, playerName }) {
     return () => {
       removeGameListeners();
     };
-  }, []);
+  }, [dispatch, roomName]);
 
   const handleExit = () => {
     emitAppSocketEvent(SOCKETS.EXIT_ROOM);
@@ -37,11 +37,7 @@ function GameRoomForm({ roomName, playerName }) {
     navigate("#rooms");
   };
 
-  const restartGame = () => {
-    emitAppSocketEvent(SOCKETS.RESTART_GAME);
-  };
-
-  const isRestartBtnEnable = () => isGameover && isStarted && isAdmin;
+  const isRestartBtnEnable = isGameover && isStarted && isAdmin;
 
   return (
     <div>
@@ -50,8 +46,10 @@ function GameRoomForm({ roomName, playerName }) {
       <h4>Player Name: {playerName}</h4>
       {isWinner && !isSolo && <h5>Congrats you're winner!</h5>}
       <button onClick={handleExit}>Exit from room</button>
-      {isRestartBtnEnable() && (
-        <button onClick={restartGame}>Restart Game</button>
+      {isRestartBtnEnable && (
+        <button onClick={() => emitAppSocketEvent(SOCKETS.RESTART_GAME)}>
+          Restart Game
+        </button>
       )}
 
       {isStarted ? (

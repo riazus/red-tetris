@@ -1,12 +1,9 @@
-import express, { json } from "express";
-import { Server } from "socket.io";
-import { createServer } from "http";
 import cors from "cors";
-import { initDB, Leaderboard } from "./database.js";
+import express, { json } from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import { SOCKETS } from "./const.js";
-import { Player, players } from "./models/Player.js";
-import { Room, rooms } from "./models/Room.js";
-import { Game } from "./models/Game.js";
+import { initDB, Leaderboard } from "./database.js";
 import {
   addLeaderArgsValid,
   createRoomArgsValid,
@@ -19,6 +16,9 @@ import {
   updateSpectrumArgsValid,
 } from "./helpers/socketValidators.js";
 import { random20Tetrominos } from "./helpers/tetrominos.js";
+import { Game } from "./models/Game.js";
+import { Player, players } from "./models/Player.js";
+import { Room } from "./models/Room.js";
 
 const PORT = process.env.BACKEND_PORT || 5000;
 
@@ -102,11 +102,14 @@ io.on("connection", async (socket) => {
    * Create user
    */
   socket.on(SOCKETS.CREATE_USER, async ({ username }, callback) => {
-    const isUsernameInvalid =
-      players.some((player) => player.username === username) ||
-      (await Leaderboard.findOne({ where: { username } }));
+    const existsInLocal = players.some(
+      (player) => player.username === username
+    );
+    const existsInDB = await Leaderboard.findOne({ where: { username } });
 
-    if (!isUsernameInvalid) {
+    const isUsernameValid = !existsInLocal && !existsInDB;
+
+    if (isUsernameValid) {
       console.log(
         "Create new player with username",
         username,
@@ -116,7 +119,7 @@ io.on("connection", async (socket) => {
       new Player(socket.id, username);
     }
 
-    callback({ isUsernameInvalid });
+    callback({ isUsernameValid });
   });
 
   /**

@@ -1,25 +1,25 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import Modal from "react-modal";
+import { useSelector } from "react-redux";
 import { SOCKETS } from "../../const";
 import { emitAppSocketEvent } from "../../sockets/socket";
-import { useSelector } from "react-redux";
 
 function SaveScoreModal({ isOpen, setIsOpen }) {
   const { score } = useSelector((root) => root.player);
   const checkboxRef = useRef();
 
-  useEffect(() => {
-    if (isOpen) {
-      setTimeout(handleCloseModal, 5000);
-    }
-  }, [isOpen]);
-
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     if (checkboxRef.current && checkboxRef.current.checked) {
       emitAppSocketEvent(SOCKETS.ADD_LEADER, { score });
     }
     setIsOpen(false);
-  };
+  }, [score, setIsOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(handleCloseModal, 5000);
+    }
+  }, [isOpen, handleCloseModal]);
 
   return (
     <Modal

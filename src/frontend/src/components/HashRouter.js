@@ -50,7 +50,7 @@ function HashRouter({ router }) {
       window.removeEventListener("popstate", onLocationChanged);
       window.addEventListener("linkClick", onLinkClick);
     };
-  }, []);
+  }, [router]);
 
   const extractRoomAndPlayerRoom = (url) => {
     const match = url.match(/([^[]+)\[([^\]]+)\]/);
