@@ -6,6 +6,10 @@ import SaveScoreModal from "./SaveScoreModal";
 jest.mock("../../sockets/socket", () => {
   return { emitAppSocketEvent: jest.fn() };
 });
+const mockSocket = {
+  on: (ev, callback) => {},
+  off: (ev) => {},
+};
 
 it("should have save checkbox while opened", () => {
   let isOpen = true;
@@ -14,6 +18,7 @@ it("should have save checkbox while opened", () => {
       <SaveScoreModal isOpen={isOpen} setIsOpen={(open) => (isOpen = open)} />
     </Provider>
   );
+});
 
 it("should have save checkbox", () => {
   const { getByRole } = render(
