@@ -6,6 +6,10 @@ import userReducer from "../../app/slices/playerSlice";
 import { store } from "../../app/store";
 import GameRoomForm from "./GameRoom";
 
+jest.mock("../../sockets/socket.js", () => {
+  return { emitAppSocketEvent: jest.fn() };
+});
+
 jest.mock("../../sockets/listeners/gameListeners.js", () => {
   const gameListeners = jest.fn();
   const removeGameListeners = jest.fn();

@@ -5,6 +5,10 @@ import { SOCKETS } from "../../const";
 import { emitAppSocketEvent } from "../../sockets/socket";
 import SaveScoreModal from "./SaveScoreModal";
 
+jest.mock("../../sockets/socket", () => {
+  return { emitAppSocketEvent: jest.fn() };
+});
+
 it("should have save checkbox while opened", () => {
   let isOpen = true;
   render(
