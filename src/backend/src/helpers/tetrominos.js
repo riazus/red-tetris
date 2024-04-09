@@ -1,5 +1,3 @@
-const TETROMINOS = ["I", "J", "L", "O", "S", "T", "Z"];
-
 export const random20Tetrominos = () => {
   const res = [];
 
@@ -9,3 +7,10 @@ export const random20Tetrominos = () => {
 
   return res;
 };
+
+export const createStage = () =>
+  Array.from(Array(STAGE_HEIGHT), () => Array(STAGE_WIDTH).fill([0, "clear"]));
+
+const TETROMINOS = ["I", "J", "L", "O", "S", "T", "Z"];
+const STAGE_WIDTH = 12;
+const STAGE_HEIGHT = 20;

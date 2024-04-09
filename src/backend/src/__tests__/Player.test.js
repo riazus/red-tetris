@@ -1,3 +1,4 @@
+import { createStage } from "../helpers/tetrominos";
 import { Player } from "../models/Player";
 
 describe("Player", () => {
@@ -12,7 +13,7 @@ describe("Player", () => {
       isAdmin: false,
       gameover: false,
       isWinner: false,
-      spectrum: "",
+      spectrum: createStage(),
     });
   });
 

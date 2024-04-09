@@ -1,5 +1,7 @@
 //import { Room } from "./Room";
 
+import { createStage } from "../helpers/tetrominos";
+
 const players = [];
 
 class Player {
@@ -20,7 +22,7 @@ class Player {
     this.gameover = false;
     this.isWinner = false;
     this.roomName = "";
-    this.spectrum = Array.from(Array(20), () => Array(12).fill([0, "clear"]));
+    this.spectrum = createStage();
     players.push(this);
 
     return this;
