@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { updateScore } from "../app/slices/playerSlice";
 import { SOCKETS } from "../const";
 import { emitAppSocketEvent } from "../sockets/socket";
-import { updateScore } from "../app/slices/playerSlice";
 
 export const useGameStatus = (rowsCleared) => {
   const { score } = useSelector((root) => root.player);

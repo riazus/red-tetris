@@ -159,6 +159,7 @@ io.on("connection", async (socket) => {
       isSolo: room.isSolo,
       roomPlayers: room.players.filter((p) => p.username !== player.username),
     });
+
     // Send players and room info when new player joins
     socket.broadcast.to(room.name).emit(SOCKETS.ADD_ROOM_PLAYER, { player });
   });
@@ -256,15 +257,13 @@ io.on("connection", async (socket) => {
   /**
    * Update spectrum
    */
-  socket.on(SOCKETS.UPDATE_SPECTRUM, ({ spectrum }, callback) => {
+  socket.on(SOCKETS.UPDATE_SPECTRUM, ({ spectrum }) => {
     const player = Player.getBySocketId(socket.id);
     const room = Room.getByName(player.roomName);
 
     if (!updateSpectrumArgsValid(room, player, spectrum)) return;
 
     player.spectrum = spectrum;
-
-    callback({ spectrum });
 
     socket.broadcast
       .to(room.name)
@@ -280,7 +279,6 @@ io.on("connection", async (socket) => {
 
     if (!updateScoreArgsValid(room, player, score)) return;
 
-    console.log(`Update score for ${player.username}: new score: ${score}`);
     player.score = score;
 
     callback({ score });

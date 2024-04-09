@@ -35,15 +35,15 @@ function MainGameForm({ players }) {
   };
 
   // TODO
-  const handleUpdateScore = () => {
-    emitAppSocketEvent(
-      SOCKETS.UPDATE_SCORE,
-      { score: score + 20 },
-      ({ score }) => {
-        dispatch(updateScore(score));
-      }
-    );
-  };
+  // const handleUpdateScore = () => {
+  //   emitAppSocketEvent(
+  //     SOCKETS.UPDATE_SCORE,
+  //     { score: score + 20 },
+  //     ({ score }) => {
+  //       dispatch(updateScore(score));
+  //     }
+  //   );
+  // };
 
   return (
     <div>

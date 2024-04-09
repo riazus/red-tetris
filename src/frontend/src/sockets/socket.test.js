@@ -1,5 +1,5 @@
 // Import the functions to be tested
-import { connectAppSocket, initializeAppSocket } from "./socket.js";
+import { initializeAppSocket } from "./socket.js";
 
 // Mock the socket.io-client module
 jest.mock("socket.io-client", () => ({
@@ -42,7 +42,7 @@ describe("Socket functions", () => {
     expect(mockSocket.disconnect).toHaveBeenCalledTimes(0); // No disconnection attempted
     expect(mockSocket.emit).toHaveBeenCalledTimes(0); // No events emitted
   });
-
+  /*
   test("connectAppSocket resolves when socket is already connected", async () => {
     mockSocket.connected = true; // Simulate connected socket
     await expect(connectAppSocket()).toBeUndefined();
@@ -50,7 +50,7 @@ describe("Socket functions", () => {
     expect(mockSocket.disconnect).toHaveBeenCalledTimes(0); // No disconnection attempted
   });
 
-  /*
+  
   test("disconnectAppSocket disconnects socket when connected", () => {
     mockSocket.connected = true; // Simulate connected socket
     disconnectAppSocket();

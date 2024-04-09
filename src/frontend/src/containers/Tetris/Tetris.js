@@ -18,7 +18,8 @@ import Stage from "../../components/Stage";
 import StartButton from "../../components/StartButton";
 
 const Tetris = () => {
-  const [dropTime, setDropTime] = useState(NaN);
+  const [dropTime, setDropTime] = useState(null);
+  const { players } = useSelector((root) => root.game);
   const [startGameBtnAvailable, setStartGameBtnAvaialable] = useState(true);
   const { isGameover, score } = useSelector((root) => root.player);
   const dispatch = useDispatch();
@@ -97,28 +98,33 @@ const Tetris = () => {
   };
 
   return (
-    <StyledTetrisWrapper
-      role="button"
-      tabIndex="0"
-      onKeyDown={(e) => move(e)}
-      onKeyUp={keyUp}
-    >
-      <StyledTetris>
-        <Stage stage={stage} />
-        <aside>
-          {isGameover ? (
-            <Display isGameover={isGameover} text="Game Over" />
-          ) : (
-            <div>
-              <Display text={`Score: ${score}`} />
-              <Display text={`rows: ${rows}`} />
-              <Display text={`Level: ${level}`} />
-            </div>
-          )}
-          {startGameBtnAvailable && <StartButton callback={startGame} />}
-        </aside>
-      </StyledTetris>
-    </StyledTetrisWrapper>
+    <>
+      <StyledTetrisWrapper
+        role="button"
+        tabIndex="0"
+        onKeyDown={(e) => move(e)}
+        onKeyUp={keyUp}
+      >
+        <StyledTetris>
+          <Stage stage={stage} />
+          <aside>
+            {isGameover ? (
+              <Display isGameover={isGameover} text="Game Over" />
+            ) : (
+              <div>
+                <Display text={`Score: ${score}`} />
+                <Display text={`rows: ${rows}`} />
+                <Display text={`Level: ${level}`} />
+              </div>
+            )}
+            {startGameBtnAvailable && <StartButton callback={startGame} />}
+          </aside>
+        </StyledTetris>
+      </StyledTetrisWrapper>
+      {players.map((player, i) => (
+        <Stage key={i} stage={player.spectrum}></Stage>
+      ))}
+    </>
   );
 };
 

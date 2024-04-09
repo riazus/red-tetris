@@ -5,8 +5,10 @@ import { useCreateRoomMutation } from "../../app/api/api";
 function CreateRoomModal({ isOpen, onRequestClose }) {
   const [roomName, setRoomName] = useState("");
   const [isSolo, setIsSolo] = useState(false);
-  const [createRoom, { data: createRoomResp, isSuccess: isCreateRoomSuccess }] =
-    useCreateRoomMutation();
+  const [
+    createRoom,
+    { data: createRoomResp, isSuccess: isCreateRoomSuccess, reset },
+  ] = useCreateRoomMutation();
 
   useEffect(() => {
     if (isCreateRoomSuccess) {
@@ -15,12 +17,13 @@ function CreateRoomModal({ isOpen, onRequestClose }) {
       if (!valid) {
         console.log(message);
       } else {
+        reset();
         setRoomName("");
         setIsSolo(false);
         onRequestClose();
       }
     }
-  }, [isCreateRoomSuccess, createRoomResp, onRequestClose]);
+  }, [isCreateRoomSuccess, createRoomResp, onRequestClose, reset]);
 
   return (
     <Modal
