@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { store } from "../../app/store";
 import MainGameForm from "./MainGameForm";
@@ -22,11 +22,11 @@ const players = [
 ];
 
 it("should have buttons", () => {
-  const { getAllByRole } = render(
+  render(
     <Provider store={store}>
       <MainGameForm players={players} socket={mockSocket} />
     </Provider>
   );
 
-  expect(getAllByRole("button").length).toEqual(2);
+  expect(screen.getAllByRole("button").length).toEqual(2);
 });

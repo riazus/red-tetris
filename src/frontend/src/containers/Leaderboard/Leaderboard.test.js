@@ -1,15 +1,15 @@
-import { render } from "@testing-library/react";
-import Leaderboard from "./Leaderboard";
+import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { store } from "../../app/store";
+import Leaderboard from "./Leaderboard";
 
 it("should have link to home", () => {
-  const { getByText, getByRole } = render(
+  render(
     <Provider store={store}>
       <Leaderboard />
     </Provider>
   );
 
-  expect(getByRole("link")).toBeInTheDocument();
-  expect(getByText(/Go to Home/i)).toBeInTheDocument();
+  expect(screen.getByRole("link")).toBeInTheDocument();
+  expect(screen.getByText(/Go to Home/i)).toBeInTheDocument();
 });

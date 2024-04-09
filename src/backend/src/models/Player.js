@@ -10,7 +10,6 @@ class Player {
   gameover;
   isWinner;
   score;
-  // TODO:
   spectrum;
 
   constructor(socketId, username) {
@@ -21,8 +20,7 @@ class Player {
     this.gameover = false;
     this.isWinner = false;
     this.roomName = "";
-    // TODO:
-    this.spectrum = "";
+    this.spectrum = Array.from(Array(20), () => Array(12).fill([0, "clear"]));
     players.push(this);
 
     return this;

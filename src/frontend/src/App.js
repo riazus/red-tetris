@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import "./App.css";
 import HashRouter from "./components/HashRouter";
 import GameRoomForm from "./containers/GameRoom/GameRoom";
 import Home from "./containers/Home/Home";

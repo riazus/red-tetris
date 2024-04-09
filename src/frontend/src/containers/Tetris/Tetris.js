@@ -1,21 +1,25 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsGameover } from "../app/slices/playerSlice";
-import { SOCKETS } from "../const";
-import { checkCollision, createStage } from "../gameHelpers";
-import { useGameStatus } from "../hooks/useGameStatus";
-import { useInterval } from "../hooks/useInterval";
-import { usePlayer } from "../hooks/usePlayer";
-import { useStage } from "../hooks/useStage";
-import { emitAppSocketEvent } from "../sockets/socket";
-import { StyledTetris, StyledTetrisWrapper } from "./styles/StyledTetris";
+import { setIsGameover } from "../../app/slices/playerSlice";
+import {
+  StyledTetris,
+  StyledTetrisWrapper,
+} from "../../components/styles/StyledTetris";
+import { SOCKETS } from "../../const";
+import { checkCollision, createStage } from "../../gameHelpers";
+import { useGameStatus } from "../../hooks/useGameStatus";
+import { useInterval } from "../../hooks/useInterval";
+import { usePlayer } from "../../hooks/usePlayer";
+import { useStage } from "../../hooks/useStage";
+import { emitAppSocketEvent } from "../../sockets/socket";
 
-import Display from "./Display";
-import Stage from "./Stage";
-import StartButton from "./StartButton";
+import Display from "../../components/Display";
+import Stage from "../../components/Stage";
+import StartButton from "../../components/StartButton";
 
 const Tetris = () => {
-  const [dropTime, setDropTime] = useState(NaN);
+  const [dropTime, setDropTime] = useState(null);
+  const { players } = useSelector((root) => root.game);
   const [startGameBtnAvailable, setStartGameBtnAvaialable] = useState(true);
   const { isGameover, score } = useSelector((root) => root.player);
   const dispatch = useDispatch();
@@ -94,28 +98,33 @@ const Tetris = () => {
   };
 
   return (
-    <StyledTetrisWrapper
-      role="button"
-      tabIndex="0"
-      onKeyDown={(e) => move(e)}
-      onKeyUp={keyUp}
-    >
-      <StyledTetris>
-        <Stage stage={stage} />
-        <aside>
-          {isGameover ? (
-            <Display isGameover={isGameover} text="Game Over" />
-          ) : (
-            <div>
-              <Display text={`Score: ${score}`} />
-              <Display text={`rows: ${rows}`} />
-              <Display text={`Level: ${level}`} />
-            </div>
-          )}
-          {startGameBtnAvailable && <StartButton callback={startGame} />}
-        </aside>
-      </StyledTetris>
-    </StyledTetrisWrapper>
+    <>
+      <StyledTetrisWrapper
+        role="button"
+        tabIndex="0"
+        onKeyDown={(e) => move(e)}
+        onKeyUp={keyUp}
+      >
+        <StyledTetris>
+          <Stage stage={stage} />
+          <aside>
+            {isGameover ? (
+              <Display isGameover={isGameover} text="Game Over" />
+            ) : (
+              <div>
+                <Display text={`Score: ${score}`} />
+                <Display text={`rows: ${rows}`} />
+                <Display text={`Level: ${level}`} />
+              </div>
+            )}
+            {startGameBtnAvailable && <StartButton callback={startGame} />}
+          </aside>
+        </StyledTetris>
+      </StyledTetrisWrapper>
+      {players.map((player, i) => (
+        <Stage key={i} stage={player.spectrum}></Stage>
+      ))}
+    </>
   );
 };
 

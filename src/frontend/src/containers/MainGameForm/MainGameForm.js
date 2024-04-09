@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateScore, updateSpectrum } from "../../app/slices/playerSlice";
-import Tetris from "../../components/Tetris";
 import { SOCKETS } from "../../const";
 import { emitAppSocketEvent } from "../../sockets/socket";
 import SaveScoreModal from "../SaveScoreModal/SaveScoreModal";
+import Tetris from "../Tetris/Tetris";
 
 /**
  * Renders tetris and modal form
@@ -35,15 +35,15 @@ function MainGameForm({ players }) {
   };
 
   // TODO
-  const handleUpdateScore = () => {
-    emitAppSocketEvent(
-      SOCKETS.UPDATE_SCORE,
-      { score: score + 20 },
-      ({ score }) => {
-        dispatch(updateScore(score));
-      }
-    );
-  };
+  // const handleUpdateScore = () => {
+  //   emitAppSocketEvent(
+  //     SOCKETS.UPDATE_SCORE,
+  //     { score: score + 20 },
+  //     ({ score }) => {
+  //       dispatch(updateScore(score));
+  //     }
+  //   );
+  // };
 
   return (
     <div>

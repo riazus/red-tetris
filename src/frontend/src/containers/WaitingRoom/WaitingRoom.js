@@ -1,14 +1,8 @@
-import { emitAppSocketEvent } from "../../sockets/socket";
 import { SOCKETS } from "../../const";
+import { emitAppSocketEvent } from "../../sockets/socket";
 
 function WaitingRoom({ players, isAdmin, isSolo }) {
-
-  const launchGame = () => {
-    emitAppSocketEvent(SOCKETS.START_GAME);
-  };
-
-  const launchGameBtnEnable = () =>
-    isAdmin && (isSolo ? true : players.length > 0);
+  const launchGameBtnEnable = isAdmin && (isSolo ? true : players.length > 0);
 
   return (
     <>
@@ -23,7 +17,11 @@ function WaitingRoom({ players, isAdmin, isSolo }) {
             );
           })}
       </ul>
-      {launchGameBtnEnable() && <button onClick={launchGame}>Launch game</button>}
+      {launchGameBtnEnable && (
+        <button onClick={() => emitAppSocketEvent(SOCKETS.START_GAME)}>
+          Launch game
+        </button>
+      )}
     </>
   );
 }

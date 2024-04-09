@@ -33,6 +33,7 @@ function SaveScoreModal({ isOpen, setIsOpen }) {
         Do you want save it?
         <input type="checkbox" defaultChecked={false} ref={checkboxRef} />
       </label>
+      <button onClick={handleCloseModal}>Close</button>
     </Modal>
   );
 }
