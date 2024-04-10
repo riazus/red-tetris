@@ -1,6 +1,4 @@
-//import { Room } from "./Room";
-
-import { createStage } from "../helpers/tetrominos";
+import { createStage } from "../helpers/tetrominos.js";
 
 const players = [];
 
@@ -53,4 +51,4 @@ class Player {
   }
 }
 
-export { players, Player };
+export { Player, players };
