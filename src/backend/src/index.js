@@ -11,7 +11,6 @@ import {
   exitRoomArgsValid,
   gameoverArgsValid,
   restartGameArgsValid,
-  startGameArgsValid,
   updateScoreArgsValid,
   updateSpectrumArgsValid,
 } from "./helpers/socketValidators.js";
@@ -162,6 +161,16 @@ io.on("connection", async (socket) => {
 
     // Send players and room info when new player joins
     socket.broadcast.to(room.name).emit(SOCKETS.ADD_ROOM_PLAYER, { player });
+
+    if (room.isSolo || room.players.length == 2) {
+      room.gameStarted = true;
+      console.log(`In the room ${room.name} game started!`);
+
+      io.emit(SOCKETS.DELETE_WAITING_ROOM, { name: room.name });
+
+      // Send to the players that game started
+      io.to(room.name).emit(SOCKETS.GAME_STARTED, random20Tetrominos());
+    }
   });
 
   /**
@@ -189,24 +198,6 @@ io.on("connection", async (socket) => {
 
     socket.leave(room.name);
     playerExit(room, player, wasAdmin);
-  });
-
-  /**
-   * Start game
-   */
-  socket.on(SOCKETS.START_GAME, () => {
-    const player = Player.getBySocketId(socket.id);
-    const room = Room.getByName(player.roomName);
-
-    if (!startGameArgsValid(room, player)) return;
-
-    room.gameStarted = true;
-    console.log(`In the room ${room.name} game started!`);
-
-    io.emit(SOCKETS.DELETE_WAITING_ROOM, { name: room.name });
-
-    // Send to the players that game started
-    io.to(room.name).emit(SOCKETS.GAME_STARTED, random20Tetrominos());
   });
 
   /**
@@ -251,7 +242,12 @@ io.on("connection", async (socket) => {
         players: room.players.filter((el) => el.socketId !== p.socketId),
       });
     });
-    io.emit(SOCKETS.ADD_WAITING_ROOM, { name: room.name });
+
+    room.gameStarted = true;
+    console.log(`In the room ${room.name} game started!`);
+
+    // Send to the players that game started
+    io.to(room.name).emit(SOCKETS.GAME_STARTED, random20Tetrominos());
   });
 
   /**

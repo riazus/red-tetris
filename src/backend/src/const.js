@@ -7,7 +7,6 @@ export const SOCKETS = {
   CREATE_ROOM: "create_room",
   EXIT_ROOM: "exit_room",
   ON_ERROR: "on_error",
-  START_GAME: "start_game",
   GAMEOVER: "gameover",
   UPDATE_SPECTRUM: "update_spectrum",
   UPDATE_SCORE: "update_score",

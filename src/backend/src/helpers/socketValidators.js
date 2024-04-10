@@ -1,5 +1,5 @@
 import { players } from "../models/Player.js";
-import { rooms, Room } from "../models/Room.js";
+import { Room, rooms } from "../models/Room.js";
 
 const createRoomArgsValid = (socket, roomName) => {
   let valid = false;
@@ -93,13 +93,13 @@ const playerAlreadyInRoom = (socketId) => {
 };
 
 export {
+  addLeaderArgsValid,
   createRoomArgsValid,
   enterRoomArgsValid,
   exitRoomArgsValid,
-  startGameArgsValid,
-  updateSpectrumArgsValid,
   gameoverArgsValid,
   restartGameArgsValid,
+  startGameArgsValid,
   updateScoreArgsValid,
-  addLeaderArgsValid,
+  updateSpectrumArgsValid,
 };

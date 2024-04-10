@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsGameover } from "../../app/slices/playerSlice";
+import { exitRoom, setIsGameover } from "../../app/slices/playerSlice";
 import {
   StyledTetris,
   StyledTetrisWrapper,
@@ -13,20 +13,38 @@ import { usePlayer } from "../../hooks/usePlayer";
 import { useStage } from "../../hooks/useStage";
 import { emitAppSocketEvent } from "../../sockets/socket";
 
+import { clearRoom } from "../../app/slices/gameSlice";
 import Display from "../../components/Display";
+import GameButton from "../../components/GameButton";
 import Stage from "../../components/Stage";
-import StartButton from "../../components/StartButton";
+import useNavigate from "../../hooks/useNavigate";
 
 const Tetris = () => {
   const [dropTime, setDropTime] = useState(null);
-  const { players } = useSelector((root) => root.game);
-  const [startGameBtnAvailable, setStartGameBtnAvaialable] = useState(true);
-  const { isGameover, score } = useSelector((root) => root.player);
+  const { players, isGameover, isStarted } = useSelector((root) => root.game);
+  const {
+    isGameover: playerLose,
+    score,
+    isAdmin,
+  } = useSelector((root) => root.player);
   const dispatch = useDispatch();
 
   const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer();
   const [stage, setStage, rowsCleared] = useStage(player, resetPlayer);
   const [rows, setRows, level, setLevel] = useGameStatus(rowsCleared);
+  const navigate = useNavigate();
+
+  const handleStartGame = useCallback(() => {
+    setStage(createStage());
+    setDropTime(1000);
+    resetPlayer();
+    setLevel(0);
+    setRows(0);
+  }, [resetPlayer, setLevel, setRows, setStage]);
+
+  useEffect(() => {
+    handleStartGame();
+  }, [handleStartGame]);
 
   const movePlayer = (dir) => {
     if (!checkCollision(player, stage, { x: dir, y: 0 })) {
@@ -35,20 +53,18 @@ const Tetris = () => {
   };
 
   const keyUp = ({ keyCode }) => {
-    if (!isGameover) {
+    if (!isGameover && !playerLose) {
       if (keyCode === 40) {
         setDropTime(1000 / (level + 1));
       }
     }
   };
 
-  const startGame = () => {
-    setStartGameBtnAvaialable(false);
-    setStage(createStage());
-    setDropTime(1000);
-    resetPlayer();
-    setLevel(0);
-    setRows(0);
+  const handleExit = () => {
+    emitAppSocketEvent(SOCKETS.EXIT_ROOM);
+    dispatch(exitRoom());
+    dispatch(clearRoom());
+    navigate("#rooms");
   };
 
   const drop = () => {
@@ -79,12 +95,18 @@ const Tetris = () => {
   }, dropTime);
 
   const handleGameover = () => {
+    setDropTime(null);
     emitAppSocketEvent(SOCKETS.PLAYER_GAMEOVER);
     dispatch(setIsGameover(true));
   };
 
+  const handleRestartGame = () => {
+    emitAppSocketEvent(SOCKETS.RESTART_GAME);
+    handleStartGame();
+  };
+
   const move = ({ keyCode }) => {
-    if (!isGameover) {
+    if (!isGameover && !playerLose) {
       if (keyCode === 37) {
         movePlayer(-1);
       } else if (keyCode === 39) {
@@ -96,6 +118,8 @@ const Tetris = () => {
       }
     }
   };
+
+  const isRestartBtnEnable = isGameover && isStarted && isAdmin;
 
   return (
     <>
@@ -109,7 +133,7 @@ const Tetris = () => {
           <Stage stage={stage} />
           <aside>
             {isGameover ? (
-              <Display isGameover={isGameover} text="Game Over" />
+              <Display isGameover={playerLose} text="Game Over" />
             ) : (
               <div>
                 <Display text={`Score: ${score}`} />
@@ -117,7 +141,10 @@ const Tetris = () => {
                 <Display text={`Level: ${level}`} />
               </div>
             )}
-            {startGameBtnAvailable && <StartButton callback={startGame} />}
+            <GameButton text={"Exit from Room"} callback={handleExit} />
+            {isRestartBtnEnable && (
+              <GameButton text={"Restart Game"} callback={handleRestartGame} />
+            )}
           </aside>
         </StyledTetris>
       </StyledTetrisWrapper>

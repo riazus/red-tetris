@@ -1,3 +1,5 @@
+import { createStage } from "../helpers/tetrominos.js";
+
 const rooms = [];
 
 class Room {
@@ -59,8 +61,7 @@ class Room {
       player.isWinner = false;
       player.gameover = false;
       player.score = 0;
-      // TODO:
-      player.spectrum = "";
+      player.spectrum = createStage();
       player.isAdmin = player.socketId === winner.socketId;
     });
 
@@ -77,4 +78,4 @@ class Room {
   }
 }
 
-export { rooms, Room };
+export { Room, rooms };

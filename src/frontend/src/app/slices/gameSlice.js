@@ -54,7 +54,6 @@ export const gameSlice = createSlice({
     },
     clearRoom: () => initialState,
     restartGame: (state, action) => {
-      state.isStarted = false;
       state.isGameover = false;
       state.players = [...action.payload];
     },
