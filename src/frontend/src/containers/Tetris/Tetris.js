@@ -43,8 +43,12 @@ const Tetris = () => {
   }, [resetPlayer, setLevel, setRows, setStage]);
 
   useEffect(() => {
-    handleStartGame();
-  }, [handleStartGame]);
+    if (isGameover) {
+      setDropTime(null);
+    } else {
+      handleStartGame();
+    }
+  }, [isGameover, handleStartGame]);
 
   const movePlayer = (dir) => {
     if (!checkCollision(player, stage, { x: dir, y: 0 })) {
@@ -76,10 +80,8 @@ const Tetris = () => {
     if (!checkCollision(player, stage, { x: 0, y: 1 })) {
       updatePlayerPos({ x: 0, y: 1, collided: false });
     } else {
-      if (player.pos.y < 1) {
-        console.log("GAME OVER!!!");
+      if (player.pos.y < 1 && !isGameover) {
         handleGameover();
-        setDropTime(null);
       }
       updatePlayerPos({ x: 0, y: 0, collided: true });
     }
@@ -95,7 +97,6 @@ const Tetris = () => {
   }, dropTime);
 
   const handleGameover = () => {
-    setDropTime(null);
     emitAppSocketEvent(SOCKETS.PLAYER_GAMEOVER);
     dispatch(setIsGameover(true));
   };

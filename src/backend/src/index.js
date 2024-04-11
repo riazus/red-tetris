@@ -218,7 +218,7 @@ io.on("connection", async (socket) => {
       .emit(SOCKETS.PLAYER_GAMEOVER, { username: player.username });
 
     if (room.gameover) {
-      const winner = room.isSolo ? player : room.assignWinner();
+      const winner = room.players.length === 1 ? player : room.assignWinner();
       io.to(winner.socketId).emit(SOCKETS.ASSIGN_WINNER);
       io.to(room.name).emit(SOCKETS.GAMEOVER);
       console.log(`Game ${room.name} finished!`);
