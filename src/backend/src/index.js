@@ -129,8 +129,8 @@ io.on("connection", async (socket) => {
 
     if (valid) {
       const { name } = new Room(roomName, isSolo);
-      if (isSolo) socket.emit(SOCKETS.ADD_WAITING_ROOM, { name });
-      else io.emit(SOCKETS.ADD_WAITING_ROOM, { name });
+      if (isSolo) socket.emit(SOCKETS.ADD_WAITING_ROOM, { name, isSolo });
+      else io.emit(SOCKETS.ADD_WAITING_ROOM, { name, isSolo });
     }
 
     callback({ valid, message });

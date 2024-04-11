@@ -16,7 +16,7 @@ class Game {
 
   static getWaitingRoomNames() {
     const roomObjects = this.getWaitingRooms();
-    return roomObjects?.map((room) => ({ name: room.name }));
+    return roomObjects?.map(({ name, isSolo }) => ({ name, isSolo }));
   }
 
   static removeRoom(roomName) {
