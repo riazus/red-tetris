@@ -142,9 +142,17 @@ const Tetris = () => {
                 <Display text={`Level: ${level}`} />
               </div>
             )}
-            <GameButton text={"Exit from Room"} callback={handleExit} />
+            <GameButton
+              text={"Exit from Room"}
+              callback={handleExit}
+              testid={"exit-room-button"}
+            />
             {isRestartBtnEnable && (
-              <GameButton text={"Restart Game"} callback={handleRestartGame} />
+              <GameButton
+                text={"Restart Game"}
+                callback={handleRestartGame}
+                testid={"restart-game-button"}
+              />
             )}
           </aside>
         </StyledTetris>

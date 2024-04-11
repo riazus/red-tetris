@@ -18,8 +18,8 @@ const StyledGameButton = styled.button`
   cursor: pointer;
 `;
 
-const GameButton = ({ text, callback }) => (
-  <StyledGameButton onClick={callback}>{text}</StyledGameButton>
+const GameButton = ({ text, callback, testid }) => (
+  <StyledGameButton onClick={callback} data-testid={testid} >{text}</StyledGameButton>
 );
 
 export default GameButton;
