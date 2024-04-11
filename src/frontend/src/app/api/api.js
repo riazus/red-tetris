@@ -60,7 +60,9 @@ export const api = createApi({
               const ind = draft.findIndex(
                 (room) => room.name === deletedRoom.name
               );
-              draft.splice(ind, 1);
+              if (ind !== -1) {
+                draft.splice(ind, 1);
+              }
             });
           });
 

@@ -25,6 +25,11 @@ function CreateRoomModal({ isOpen, onRequestClose }) {
     }
   }, [isCreateRoomSuccess, createRoomResp, onRequestClose, reset]);
 
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    createRoom({ roomName, isSolo });
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -33,23 +38,25 @@ function CreateRoomModal({ isOpen, onRequestClose }) {
       contentLabel="Create Room Modal"
     >
       <h2>Create Room</h2>
-      <label>
-        Room Name:
-        <input
-          type="text"
-          value={roomName}
-          onChange={(e) => setRoomName(e.target.value)}
-        />
-      </label>
-      <label>
-        Is Solo:
-        <input
-          type="checkbox"
-          checked={isSolo}
-          onChange={() => setIsSolo(!isSolo)}
-        />
-      </label>
-      <button onClick={() => createRoom({ roomName, isSolo })}>Create</button>
+      <form onSubmit={handleFormSubmit}>
+        <label>
+          Room Name:
+          <input
+            type="text"
+            value={roomName}
+            onChange={(e) => setRoomName(e.target.value)}
+          />
+        </label>
+        <label>
+          Is Solo:
+          <input
+            type="checkbox"
+            checked={isSolo}
+            onChange={() => setIsSolo(!isSolo)}
+          />
+        </label>
+        <button>Create</button>
+      </form>
     </Modal>
   );
 }
