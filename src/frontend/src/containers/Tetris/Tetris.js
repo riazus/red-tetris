@@ -148,9 +148,10 @@ const Tetris = () => {
           </aside>
         </StyledTetris>
       </StyledTetrisWrapper>
-      {players.map((player, i) => (
-        <Stage key={i} stage={player.spectrum}></Stage>
-      ))}
+      {players.map(
+        ({ spectrum }, i) =>
+          spectrum && <Stage key={i} stage={spectrum}></Stage>
+      )}
     </>
   );
 };
