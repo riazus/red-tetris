@@ -1,39 +1,39 @@
-import { useCallback, useEffect, useRef } from "react";
-import Modal from "react-modal";
+import { Modal } from "antd";
+import Title from "antd/es/typography/Title";
+import { useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { SOCKETS } from "../../const";
 import { emitAppSocketEvent } from "../../sockets/socket";
 
 function SaveScoreModal({ isOpen, setIsOpen }) {
   const { score } = useSelector((root) => root.player);
-  const checkboxRef = useRef();
 
-  const handleCloseModal = useCallback(() => {
-    if (checkboxRef.current && checkboxRef.current.checked) {
-      emitAppSocketEvent(SOCKETS.ADD_LEADER, { score });
-    }
+  const handleSave = () => {
+    emitAppSocketEvent(SOCKETS.ADD_LEADER, { score });
     setIsOpen(false);
-  }, [score, setIsOpen]);
+  };
+
+  const handleCancel = useCallback(() => {
+    setIsOpen(false);
+  }, [setIsOpen]);
 
   useEffect(() => {
     if (isOpen) {
-      setTimeout(handleCloseModal, 5000);
+      setTimeout(handleCancel, 5000);
     }
-  }, [isOpen, handleCloseModal]);
+  }, [isOpen, handleCancel]);
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={handleCloseModal}
-      ariaHideApp={false}
-      contentLabel="Save Score"
+      open={isOpen}
+      title="Save Score"
+      okText="Save"
+      onOk={handleSave}
+      onCancel={handleCancel}
+      onRequestClose={handleCancel}
     >
-      <h3>Your score: {score}</h3>
-      <label>
-        Do you want save it?
-        <input type="checkbox" defaultChecked={false} ref={checkboxRef} />
-      </label>
-      <button onClick={handleCloseModal}>Close</button>
+      <Title level={3}>Your score: {score}</Title>
+      <Title level={5}>Do you want save it?</Title>
     </Modal>
   );
 }

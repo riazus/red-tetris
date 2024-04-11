@@ -1,23 +1,36 @@
-import { useState } from "react";
+import { Button, Form, Input } from "antd";
 import { useCreateUserMutation } from "../../app/api/api";
 
 function UsernameForm() {
-  const [username, setUsername] = useState("");
-  const [createUser, { isLoading }] = useCreateUserMutation();
+  const [createUser] = useCreateUserMutation();
 
-  const onUsernameInputSubmit = async (e, username) => {
-    e.preventDefault();
+  const handleSubmit = ({ username }) => {
     createUser(username);
   };
 
+  const handleFailed = (errorInfo) => {
+    console.log(errorInfo);
+  };
+
   return (
-    <form onSubmit={(e) => onUsernameInputSubmit(e, username)}>
-      <input
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      ></input>
-      <button disabled={isLoading}>Create!</button>
-    </form>
+    <Form onFinish={handleSubmit} onFinishFailed={handleFailed}>
+      <Form.Item
+        name="username"
+        rules={[
+          {
+            required: true,
+            message: "Please input your username!",
+          },
+        ]}
+      >
+        <Input placeholder="Username" />
+      </Form.Item>
+      <Form.Item>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
+      </Form.Item>
+    </Form>
   );
 }
 

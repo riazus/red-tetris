@@ -1,3 +1,4 @@
+import { Flex } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { SOCKETS } from "../../const";
@@ -31,11 +32,7 @@ function GameRoomForm({ roomName, playerName }) {
   }, [dispatch, roomName]);
 
   return (
-    <div>
-      <h1>Game Room</h1>
-      <h4>Room Name: {roomName}</h4>
-      <h4>Player Name: {playerName}</h4>
-
+    <Flex title="Game Room">
       {isStarted ? (
         <div>
           <SaveScoreModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
@@ -44,7 +41,7 @@ function GameRoomForm({ roomName, playerName }) {
       ) : (
         <p>Waiting for second player...</p>
       )}
-    </div>
+    </Flex>
   );
 }
 
