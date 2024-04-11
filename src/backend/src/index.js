@@ -14,7 +14,7 @@ import {
   updateScoreArgsValid,
   updateSpectrumArgsValid,
 } from "./helpers/socketValidators.js";
-import { random20Tetrominos } from "./helpers/tetrominos.js";
+import { createStage, random20Tetrominos } from "./helpers/tetrominos.js";
 import { Game } from "./models/Game.js";
 import { Player, players } from "./models/Player.js";
 import { Room } from "./models/Room.js";
@@ -188,7 +188,7 @@ io.on("connection", async (socket) => {
     room.removePlayer(player.username);
     player.roomName = "";
     player.score = 0;
-    player.spectrum = "";
+    player.spectrum = createStage();
     player.gameover = false;
     player.isWinner = false;
 
