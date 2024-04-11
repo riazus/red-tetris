@@ -1,5 +1,5 @@
+import { Input, Modal } from "antd";
 import React, { useEffect, useState } from "react";
-import Modal from "react-modal";
 import { useCreateRoomMutation } from "../../app/api/api";
 
 function CreateRoomModal({ isOpen, onRequestClose }) {
@@ -32,17 +32,15 @@ function CreateRoomModal({ isOpen, onRequestClose }) {
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
-      ariaHideApp={false}
-      contentLabel="Create Room Modal"
+      open={isOpen}
+      title={"Create Room"}
+      onOk={() => createRoom({ roomName, isSolo })}
+      onCancel={onRequestClose}
     >
-      <h2>Create Room</h2>
       <form onSubmit={handleFormSubmit}>
         <label>
           Room Name:
-          <input
-            type="text"
+          <Input
             value={roomName}
             onChange={(e) => setRoomName(e.target.value)}
           />

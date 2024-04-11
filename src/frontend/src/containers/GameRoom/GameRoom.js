@@ -1,3 +1,4 @@
+import { Modal } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { SOCKETS } from "../../const";
@@ -31,8 +32,7 @@ function GameRoomForm({ roomName, playerName }) {
   }, [dispatch, roomName]);
 
   return (
-    <div>
-      <h1>Game Room</h1>
+    <Modal title="Game Room">
       <h4>Room Name: {roomName}</h4>
       <h4>Player Name: {playerName}</h4>
 
@@ -44,7 +44,7 @@ function GameRoomForm({ roomName, playerName }) {
       ) : (
         <p>Waiting for second player...</p>
       )}
-    </div>
+    </Modal>
   );
 }
 

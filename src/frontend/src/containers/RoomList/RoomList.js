@@ -3,6 +3,8 @@ import { useGetAvailableRoomsQuery } from "../../app/api/api";
 import { useState } from "react";
 import CreateRoomModal from "../CreateRoomModal/CreateRoomModal";
 import { useSelector } from "react-redux";
+import { Flex, Button } from "antd";
+import React from "react";
 
 function RoomList() {
   const { username } = useSelector((state) => state.player);
@@ -13,30 +15,30 @@ function RoomList() {
   if (isRoomsLoading) return <p>Loading...</p>;
 
   return (
-    <div>
-      <h1>Avaialable Rooms</h1>
-      <button onClick={() => setIsModalOpen(true)}>Create Room</button>
+    <Flex vertical align="center">
+      <h1>Lobby</h1>
       <CreateRoomModal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
       />
 
-      {rooms && (
-        <ul>
-          {rooms.map((room, ind) => {
-            return (
-              <li key={ind}>
-                <p>{room.name}</p>
-                <Link to={`http://${window.location.host}/#${room.name}[${username}]`}>
-                  Join to {room.name} room
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-      <Link to="#">Go to Home</Link>
-    </div>
+      {rooms &&
+        rooms.map((room, index) => (
+          <React.Fragment key={index}>
+            <Flex gap={6} justify="space-between">
+              <p>{room.name}</p>
+              <Button
+                type={"primary"}
+                to={`http://${window.location.host}/#${room.name}[${username}]`}
+              >
+                Join
+              </Button>
+            </Flex>
+          </React.Fragment>
+        ))}
+      {/* <Link to="#">Return to Home Page</Link> */}
+      <button onClick={() => setIsModalOpen(true)}>Create Room</button>
+    </Flex>
   );
 }
 

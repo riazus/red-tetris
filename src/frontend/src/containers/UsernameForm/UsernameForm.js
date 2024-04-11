@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCreateUserMutation } from "../../app/api/api";
+import { Input, Button, Flex } from "antd";
 
 function UsernameForm() {
   const [username, setUsername] = useState("");
@@ -12,11 +13,19 @@ function UsernameForm() {
 
   return (
     <form onSubmit={(e) => onUsernameInputSubmit(e, username)}>
-      <input
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      ></input>
-      <button disabled={isLoading}>Create!</button>
+      <Flex gap={10}>
+        <Input
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        ></Input>
+        <Button
+          onClick={(e) => onUsernameInputSubmit(e, username)}
+          type="primary"
+          disabled={isLoading}
+        >
+          Create!
+        </Button>
+      </Flex>
     </form>
   );
 }
