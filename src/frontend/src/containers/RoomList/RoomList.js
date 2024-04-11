@@ -1,10 +1,9 @@
-import Link from "../../components/Link";
-import { useGetAvailableRoomsQuery } from "../../app/api/api";
-import { useState } from "react";
-import CreateRoomModal from "../CreateRoomModal/CreateRoomModal";
+import { Flex } from "antd";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Flex, Button } from "antd";
-import React from "react";
+import { useGetAvailableRoomsQuery } from "../../app/api/api";
+import Link from "../../components/Link";
+import CreateRoomModal from "../CreateRoomModal/CreateRoomModal";
 
 function RoomList() {
   const { username } = useSelector((state) => state.player);
@@ -27,12 +26,12 @@ function RoomList() {
           <React.Fragment key={index}>
             <Flex gap={6} justify="space-between">
               <p>{room.name}</p>
-              <Button
+              <Link
                 type={"primary"}
                 to={`http://${window.location.host}/#${room.name}[${username}]`}
               >
                 Join
-              </Button>
+              </Link>
             </Flex>
           </React.Fragment>
         ))}
