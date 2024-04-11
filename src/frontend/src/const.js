@@ -21,4 +21,4 @@ export const SOCKETS = {
   PLAYER_GAMEOVER: "player_gameover",
 };
 
-export const API_BASE_URL = `http://localhost:${process.env.API_PORT ?? 8000}`;
+export const API_BASE_URL = `http://localhost:${process.env.API_PORT ?? 5000}`;

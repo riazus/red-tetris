@@ -1,7 +1,7 @@
-import React from "react";
 import { Flex } from "antd";
-import Link from "./Link";
+import React from "react";
 import { useSelector } from "react-redux";
+import Link from "./Link";
 import "./styles/NavBar.css";
 
 const NavBar = ({ links }) => {
@@ -10,8 +10,8 @@ const NavBar = ({ links }) => {
     return (
       <>
         <Flex justify="end" gap={16} className={"barContainer"}>
-          {links.map((link) => (
-            <Flex gap={8}>
+          {links.map((link, i) => (
+            <Flex key={i} gap={8}>
               {link.icon}
               <Link key={link.href} to={link.href}>
                 {link.label}
