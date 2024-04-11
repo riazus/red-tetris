@@ -11,6 +11,7 @@ import {
 import { emitAppSocketEvent } from "../../sockets/socket";
 import MainGameForm from "../MainGameForm/MainGameForm";
 import WaitingRoom from "../WaitingRoom/WaitingRoom";
+import Modal from "antd/es/modal/Modal";
 
 function GameRoomForm({ roomName, playerName }) {
   const { players, isStarted, isGameover, isSolo } = useSelector(
@@ -40,8 +41,7 @@ function GameRoomForm({ roomName, playerName }) {
   const isRestartBtnEnable = isGameover && isStarted && isAdmin;
 
   return (
-    <div>
-      <h1>Game Room</h1>
+    <Modal title="Game Room">
       <h4>Room Name: {roomName}</h4>
       <h4>Player Name: {playerName}</h4>
       {isWinner && !isSolo && <h5>Congrats you're winner!</h5>}
@@ -49,7 +49,10 @@ function GameRoomForm({ roomName, playerName }) {
         Exit from room
       </button>
       {isRestartBtnEnable && (
-        <button data-testid="restart-game-button" onClick={() => emitAppSocketEvent(SOCKETS.RESTART_GAME)}>
+        <button
+          data-testid="restart-game-button"
+          onClick={() => emitAppSocketEvent(SOCKETS.RESTART_GAME)}
+        >
           Restart Game
         </button>
       )}
@@ -59,7 +62,7 @@ function GameRoomForm({ roomName, playerName }) {
       ) : (
         <WaitingRoom players={players} isAdmin={isAdmin} isSolo={isSolo} />
       )}
-    </div>
+    </Modal>
   );
 }
 

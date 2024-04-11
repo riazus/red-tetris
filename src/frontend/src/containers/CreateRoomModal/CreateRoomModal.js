@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Modal from "react-modal";
+import { Modal, Input } from "antd";
 import { useCreateRoomMutation } from "../../app/api/api";
 
 function CreateRoomModal({ isOpen, onRequestClose }) {
@@ -27,19 +27,12 @@ function CreateRoomModal({ isOpen, onRequestClose }) {
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
-      ariaHideApp={false}
-      contentLabel="Create Room Modal"
-    >
-      <h2>Create Room</h2>
+      open={isOpen}
+      title={"Create Room"}
+      onOk={() => createRoom({ roomName, isSolo })} onCancel={onRequestClose}>
       <label>
         Room Name:
-        <input
-          type="text"
-          value={roomName}
-          onChange={(e) => setRoomName(e.target.value)}
-        />
+        <Input value={roomName} onChange={(e) => setRoomName(e.target.value)} />
       </label>
       <label>
         Is Solo:
@@ -49,7 +42,7 @@ function CreateRoomModal({ isOpen, onRequestClose }) {
           onChange={() => setIsSolo(!isSolo)}
         />
       </label>
-      <button onClick={() => createRoom({ roomName, isSolo })}>Create</button>
+      {/* <button onClick={() => createRoom({ roomName, isSolo })}>Create</button> */}
     </Modal>
   );
 }
