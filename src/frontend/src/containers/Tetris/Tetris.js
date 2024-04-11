@@ -156,11 +156,11 @@ const Tetris = () => {
             )}
           </aside>
         </StyledTetris>
+        {players.map(
+          ({ spectrum }, i) =>
+            spectrum && <Stage key={i} stage={spectrum}></Stage>
+        )}
       </StyledTetrisWrapper>
-      {players.map(
-        ({ spectrum }, i) =>
-          spectrum && <Stage key={i} stage={spectrum}></Stage>
-      )}
     </>
   );
 };

@@ -6,7 +6,9 @@ import "./styles/NavBar.css";
 
 const NavBar = ({ links }) => {
   const { username } = useSelector((state) => state.player);
-  if (username.length > 1)
+  const { isStarted } = useSelector((root) => root.game);
+
+  if (username.length > 1 && !isStarted)
     return (
       <>
         <Flex justify="end" gap={16} className={"barContainer"}>
