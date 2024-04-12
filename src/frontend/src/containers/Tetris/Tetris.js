@@ -18,6 +18,7 @@ import Display from "../../components/Display";
 import GameButton from "../../components/GameButton";
 import Stage from "../../components/Stage";
 import useNavigate from "../../hooks/useNavigate";
+import { Table } from "antd";
 
 const Tetris = () => {
   const [dropTime, setDropTime] = useState(null);
@@ -134,13 +135,26 @@ const Tetris = () => {
           <Stage stage={stage} />
           <aside>
             {isGameover ? (
-              <Display isGameover={playerLose} text="Game Over" />
+              <h1>Game Over</h1>
             ) : (
-              <div>
-                <Display text={`Score: ${score}`} />
-                <Display text={`rows: ${rows}`} />
-                <Display text={`Level: ${level}`} />
-              </div>
+              <Table
+                columns={[
+                  { title: "Score", dataIndex: "score" },
+                  { title: "Rows", dataIndex: "rows" },
+                  { title: "Level", dataIndex: "level" },
+                ]}
+                dataSource={[
+                  {
+                    key: "1",
+                    score,
+                    rows,
+                    level,
+                  },
+                ]}
+                bordered={true}
+                pagination={false}
+                style={{ marginTop: 30 }}
+              />
             )}
             <GameButton
               text={"Exit from Room"}
