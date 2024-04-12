@@ -68,7 +68,7 @@ const Tetris = () => {
     emitAppSocketEvent(SOCKETS.EXIT_ROOM);
     dispatch(exitRoom());
     dispatch(clearRoom());
-    navigate("#rooms");
+    navigate("#");
   };
 
   const drop = () => {

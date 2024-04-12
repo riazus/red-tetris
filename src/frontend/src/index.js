@@ -1,12 +1,12 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { HiUserGroup } from "react-icons/hi";
+import { MdLeaderboard } from "react-icons/md";
 import { Provider } from "react-redux";
 import App from "./App";
 import { store } from "./app/store";
 import NavBar from "./components/NavBar";
 import "./index.css";
-import { MdLeaderboard } from "react-icons/md";
-import { HiUserGroup } from "react-icons/hi";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
@@ -15,12 +15,12 @@ const links = [
   {
     href: "#leaderboard",
     label: "Leaderboard",
-    icon: <MdLeaderboard/>,
+    icon: <MdLeaderboard />,
   },
   {
-    href: "#rooms",
+    href: "#",
     label: "Lobby",
-    icon: <HiUserGroup/>
+    icon: <HiUserGroup />,
   },
 ];
 

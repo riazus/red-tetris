@@ -42,7 +42,6 @@ app.post("/leaderboard", async (req, res) => {
   const findUser = await Leaderboard.findOne({ where: { username } });
 
   if (findUser && findUser.score < score) {
-    //res.status(400).send({ message: "Player with this name already exists" });
     await Leaderboard.update({ score }, { where: { username } });
   } else {
     await Leaderboard.create({ username, score });

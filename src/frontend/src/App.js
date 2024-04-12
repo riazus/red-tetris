@@ -3,7 +3,6 @@ import HashRouter from "./components/HashRouter";
 import GameRoomForm from "./containers/GameRoom/GameRoom";
 import Home from "./containers/Home/Home";
 import Leaderboard from "./containers/Leaderboard/Leaderboard";
-import RoomList from "./containers/RoomList/RoomList";
 import {
   connectAppSocket,
   disconnectAppSocket,
@@ -18,10 +17,6 @@ const router = [
   {
     href: "leaderboard",
     element: <Leaderboard />,
-  },
-  {
-    href: "rooms",
-    element: <RoomList />,
   },
   {
     href: ":roomName[:playerName]",
