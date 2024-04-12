@@ -37,7 +37,7 @@ const Tetris = () => {
   const handleStartGame = useCallback(() => {
     setStage(createStage());
     setDropTime(1000);
-    resetPlayer();
+    resetPlayer(true);
     setLevel(0);
     setRows(0);
   }, [resetPlayer, setLevel, setRows, setStage]);

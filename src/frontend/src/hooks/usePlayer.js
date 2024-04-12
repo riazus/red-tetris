@@ -46,17 +46,23 @@ export const usePlayer = () => {
     }));
   };
 
-  const resetPlayer = useCallback(() => {
-    setPlayer((prev) => {
-      const ind = prev.ind === MAX_TETROMINOS_COUNT - 1 || 0 ? 0 : prev.ind + 1;
-      return {
-        pos: { x: STAGE_WIDTH / 2 - 2, y: 0 },
-        tetromino: TETROMINOS[tetrominos[ind]].shape,
-        collided: false,
-        ind,
-      };
-    });
-  }, [tetrominos]);
+  const resetPlayer = useCallback(
+    (resetGlobal) => {
+      setPlayer((prev) => {
+        const ind =
+          prev.ind === MAX_TETROMINOS_COUNT - 1 || 0 || resetGlobal
+            ? 0
+            : prev.ind + 1;
+        return {
+          pos: { x: STAGE_WIDTH / 2 - 2, y: 0 },
+          tetromino: TETROMINOS[tetrominos[ind]].shape,
+          collided: false,
+          ind,
+        };
+      });
+    },
+    [tetrominos]
+  );
 
   return [player, updatePlayerPos, resetPlayer, playerRotate];
 };
