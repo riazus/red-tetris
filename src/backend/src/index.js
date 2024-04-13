@@ -64,10 +64,8 @@ const playerExit = (room, player, wasAdmin) => {
     Game.removeRoom(room.name);
     io.emit(SOCKETS.DELETE_WAITING_ROOM, { name: room.name });
   } else if (room.gameStarted) {
-    if (wasAdmin) {
-      room.players[0].isAdmin = true;
-      io.to(room.players[0].socketId).emit(SOCKETS.SET_ADMIN_STATUS);
-    }
+    room.players[0].isAdmin = true;
+    io.to(room.players[0].socketId).emit(SOCKETS.SET_ADMIN_STATUS);
 
     if (!room.gameover) {
       room.gameover = true;

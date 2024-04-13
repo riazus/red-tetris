@@ -46,12 +46,14 @@ class Room {
   }
 
   restartGame() {
-    const winnerSocketId =
-      this.players.length === 1
-        ? this.players[0].socketId
-        : [...this.players].sort((a, b) => b.score - a.score)[0].winnerSocketId;
+    const player1 = this.players[0];
+    const player2 = this.players[1];
 
-    console.log(`WINNER SOCKET ID: ${winnerSocketId}`);
+    const winnerSocketId = this.isSolo
+      ? player1.socketId
+      : player1.score > player2.score
+      ? player1.socketId
+      : player2.socketId;
 
     this.players.forEach((player) => {
       player.isWinner = false;
