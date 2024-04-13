@@ -1,4 +1,3 @@
-import uniqid from "uniqid";
 import { Sequelize, DataTypes } from "sequelize";
 
 const sequelize = new Sequelize({
@@ -10,7 +9,6 @@ const sequelize = new Sequelize({
 const Leaderboard = sequelize.define("Leaderboard", {
   id: {
     type: DataTypes.STRING,
-    defaultValue: uniqid(),
     primaryKey: true,
   },
   username: {

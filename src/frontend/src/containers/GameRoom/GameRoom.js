@@ -10,10 +10,12 @@ import { emitAppSocketEvent } from "../../sockets/socket";
 import SaveScoreModal from "../SaveScoreModal/SaveScoreModal";
 import Tetris from "../Tetris/Tetris";
 
-function GameRoomForm({ roomName, playerName }) {
+function GameRoomForm({ roomName }) {
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { isStarted, isGameover } = useSelector((root) => root.game);
+  const { isStarted, isGameover, players, isSolo } = useSelector(
+    (root) => root.game
+  );
 
   useEffect(() => {
     if (isGameover) {
@@ -31,9 +33,11 @@ function GameRoomForm({ roomName, playerName }) {
     };
   }, [dispatch, roomName]);
 
+  const renderGame = isStarted && (isSolo ? true : players.length === 1);
+
   return (
     <Flex title="Game Room">
-      {isStarted ? (
+      {renderGame ? (
         <div>
           <SaveScoreModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
           <Tetris />

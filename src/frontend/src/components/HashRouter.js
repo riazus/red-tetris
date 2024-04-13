@@ -23,12 +23,7 @@ function HashRouter({ router }) {
         if (params) {
           element = {
             href: ":roomName[:playerName]",
-            element: (
-              <GameRoomForm
-                playerName={params.playerName}
-                roomName={params.roomName}
-              />
-            ),
+            element: <GameRoomForm roomName={params.roomName} />,
           };
         }
       } else {

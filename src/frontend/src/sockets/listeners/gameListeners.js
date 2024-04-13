@@ -16,6 +16,7 @@ import {
   setIsAdmin,
   setIsWinner,
   setRoomName,
+  setIsGameover as setPlayerGameover,
 } from "../../app/slices/playerSlice";
 import { SOCKETS } from "../../const";
 import { getAppSocket } from "../socket";
@@ -44,6 +45,8 @@ export const gameListeners = (dispatch) => {
   socket.on(SOCKETS.GAME_STARTED, (tetrominos) => {
     dispatch(setIsStarted(true));
     dispatch(setTetrominos(tetrominos));
+    dispatch(setIsGameover(false));
+    dispatch(setPlayerGameover(false));
   });
 
   socket.on(SOCKETS.RESTART_GAME, ({ isAdmin, players }) => {

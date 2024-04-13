@@ -9,9 +9,7 @@ class Game {
   }
 
   static getWaitingRooms() {
-    return rooms.filter(
-      (room) => !room.gameStarted && !room.gameover && !room.isSolo
-    );
+    return rooms.filter((room) => !room.gameStarted && !room.isSolo);
   }
 
   static getWaitingRoomNames() {

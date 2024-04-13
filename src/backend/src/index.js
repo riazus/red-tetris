@@ -1,4 +1,5 @@
 import cors from "cors";
+import uniqid from "uniqid";
 import express, { json } from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -41,10 +42,10 @@ app.post("/leaderboard", async (req, res) => {
 
   const findUser = await Leaderboard.findOne({ where: { username } });
 
-  if (findUser && findUser.score < score) {
+  if (findUser) {
     await Leaderboard.update({ score }, { where: { username } });
   } else {
-    await Leaderboard.create({ username, score });
+    await Leaderboard.create({ id: uniqid(), username, score });
   }
 
   res.sendStatus(201);
@@ -69,15 +70,17 @@ const playerExit = (room, player, wasAdmin) => {
     }
 
     if (!room.gameover) {
-      room.gameover =
-        room.players.filter((player) => !player.gameover).length < 2;
-      if (room.gameover) {
-        const winner = room.assignWinner();
-        io.to(winner.socketId).emit(SOCKETS.ASSIGN_WINNER);
-        io.to(room.name).emit(SOCKETS.GAMEOVER);
-        console.log(`Game ${room.name} finished!`);
-      }
+      room.gameover = true;
+      const winner = room.assignWinner();
+      io.to(winner.socketId).emit(SOCKETS.ASSIGN_WINNER);
+      io.to(room.name).emit(SOCKETS.GAMEOVER);
+      console.log(`Game ${room.name} finished!`);
+    } else {
+      room.players[0].spectrum = createStage();
+      room.players[0].gameover = false;
     }
+
+    room.gameStarted = false;
 
     io.to(room.name).emit(SOCKETS.DELETE_ROOM_PLAYER, {
       username: player.username,
@@ -190,10 +193,7 @@ io.on("connection", async (socket) => {
     player.spectrum = createStage();
     player.gameover = false;
     player.isWinner = false;
-
-    if (player.isAdmin) {
-      player.isAdmin = false;
-    }
+    player.isAdmin = false;
 
     socket.leave(room.name);
     playerExit(room, player, wasAdmin);

@@ -46,23 +46,19 @@ class Room {
   }
 
   restartGame() {
-    let winner;
+    const winnerSocketId =
+      this.players.length === 1
+        ? this.players[0].socketId
+        : [...this.players].sort((a, b) => b.score - a.score)[0].winnerSocketId;
 
-    if (this.players.length > 1) {
-      const winners = [...this.players]
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 2);
-      winner = !winners[0].isAdmin ? winners[0] : winners[1];
-    } else {
-      winner = this.players[0];
-    }
+    console.log(`WINNER SOCKET ID: ${winnerSocketId}`);
 
     this.players.forEach((player) => {
       player.isWinner = false;
       player.gameover = false;
       player.score = 0;
       player.spectrum = createStage();
-      player.isAdmin = player.socketId === winner.socketId;
+      player.isAdmin = player.socketId === winnerSocketId;
     });
 
     this.gameStarted = false;
