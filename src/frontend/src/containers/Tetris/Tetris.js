@@ -1,3 +1,4 @@
+import { Table } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { exitRoom, setIsGameover } from "../../app/slices/playerSlice";
@@ -14,7 +15,6 @@ import { useStage } from "../../hooks/useStage";
 import { emitAppSocketEvent } from "../../sockets/socket";
 
 import { clearRoom } from "../../app/slices/gameSlice";
-import Display from "../../components/Display";
 import GameButton from "../../components/GameButton";
 import Stage from "../../components/Stage";
 import useNavigate from "../../hooks/useNavigate";
@@ -134,13 +134,26 @@ const Tetris = () => {
           <Stage stage={stage} />
           <aside>
             {isGameover ? (
-              <Display isGameover={playerLose} text="Game Over" />
+              <h1>Game Over</h1>
             ) : (
-              <div>
-                <Display text={`Score: ${score}`} />
-                <Display text={`rows: ${rows}`} />
-                <Display text={`Level: ${level}`} />
-              </div>
+              <Table
+                columns={[
+                  { title: "Score", dataIndex: "score" },
+                  { title: "Rows", dataIndex: "rows" },
+                  { title: "Level", dataIndex: "level" },
+                ]}
+                dataSource={[
+                  {
+                    key: "1",
+                    score,
+                    rows,
+                    level,
+                  },
+                ]}
+                bordered={true}
+                pagination={false}
+                style={{ marginTop: 30 }}
+              />
             )}
             <GameButton
               text={"Exit from Room"}
