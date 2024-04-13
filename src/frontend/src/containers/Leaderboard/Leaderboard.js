@@ -1,10 +1,8 @@
-import Link from "../../components/Link";
+import { Flex, Table } from "antd";
 import { useGetLeaderboardQuery } from "../../app/api/api";
-import { Button, Flex, Table } from "antd";
 
 function Leaderboard() {
   const { data, isLoading } = useGetLeaderboardQuery();
-  console.log(data);
 
   return (
     <Flex vertical align="center">
@@ -29,10 +27,6 @@ function Leaderboard() {
           />
         )
       )}
-      {/* <Link to="#">Go to Home</Link> */}
-      <Button type="primary" to="#">
-        Home
-      </Button>
     </Flex>
   );
 }

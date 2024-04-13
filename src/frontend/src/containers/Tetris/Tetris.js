@@ -1,3 +1,4 @@
+import { Table } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { exitRoom, setIsGameover } from "../../app/slices/playerSlice";
@@ -14,11 +15,9 @@ import { useStage } from "../../hooks/useStage";
 import { emitAppSocketEvent } from "../../sockets/socket";
 
 import { clearRoom } from "../../app/slices/gameSlice";
-import Display from "../../components/Display";
 import GameButton from "../../components/GameButton";
 import Stage from "../../components/Stage";
 import useNavigate from "../../hooks/useNavigate";
-import { Table } from "antd";
 
 const Tetris = () => {
   const [dropTime, setDropTime] = useState(null);
