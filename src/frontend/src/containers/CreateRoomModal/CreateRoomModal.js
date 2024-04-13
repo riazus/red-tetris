@@ -34,7 +34,12 @@ function CreateRoomModal({ isOpen, onRequestClose }) {
     >
       <label>
         Room Name:
-        <Input value={roomName} onChange={(e) => setRoomName(e.target.value)} />
+        <Input
+          value={roomName}
+          onChange={(e) =>
+            inputValid(e.target.value) && setRoomName(e.target.value)
+          }
+        />
       </label>
       <label>
         Is Solo:
@@ -47,5 +52,9 @@ function CreateRoomModal({ isOpen, onRequestClose }) {
     </Modal>
   );
 }
+
+const inputValid = (input) => {
+  return (!input || /^[a-zA-Z0-9]+$/.test(input)) && input.length < 20;
+};
 
 export default CreateRoomModal;

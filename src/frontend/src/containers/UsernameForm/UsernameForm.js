@@ -19,8 +19,19 @@ function UsernameForm() {
         rules={[
           {
             required: true,
-            message: "Please input your username!",
+            message: "Invalid length!",
+            max: 20,
           },
+          () => ({
+            validator(_, value) {
+              if (!value || /^[a-zA-Z0-9]+$/.test(value)) {
+                return Promise.resolve();
+              }
+              return Promise.reject(
+                new Error("Can contain only letters and numbers!")
+              );
+            },
+          }),
         ]}
       >
         <Input placeholder="Username" />
