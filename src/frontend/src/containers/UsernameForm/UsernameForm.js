@@ -1,14 +1,14 @@
 import { Button, Input } from "antd";
 import { useState } from "react";
-import { useCreateUserMutation } from "../../app/api/api";
+import { useCreateUser } from "./useCreateUser";
 
 function UsernameForm() {
-  const [createUser] = useCreateUserMutation();
+  const { createUser } = useCreateUser();
   const [username, setUsername] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    createUser(username);
+    await createUser(username);
   };
 
   return (
