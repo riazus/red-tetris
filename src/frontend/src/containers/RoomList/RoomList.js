@@ -1,7 +1,7 @@
 import { Button, Flex, Table } from "antd";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import Link from "../../components/Link";
+import Link from "../../components/Link/Link";
 import CreateRoomModal from "../CreateRoomModal/CreateRoomModal";
 import { useGetAvailableRooms } from "./useGetAvailableRooms";
 

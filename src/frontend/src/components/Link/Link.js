@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 function Link({ to, children }) {
   const { username } = useSelector((state) => state.player);
 
-  const onClick = (event) => {
+  const handleClick = (event) => {
     event.preventDefault();
     window.history.pushState({}, "", to);
     const ev = new CustomEvent("linkClick", { detail: { username } });
@@ -12,7 +12,7 @@ function Link({ to, children }) {
   };
 
   return (
-    <a href={to} onClick={onClick}>
+    <a data-testid="link-id" href={to} onClick={handleClick}>
       {children}
     </a>
   );

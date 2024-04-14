@@ -9,14 +9,6 @@ import {
   initializeAppSocket,
 } from "./sockets/socket";
 
-jest.mock(
-  "./components/HashRouter",
-  () =>
-    function HashRouter({ router }) {
-      return <p>Router...</p>;
-    }
-);
-
 jest.mock("./sockets/socket", () => ({
   connectAppSocket: jest.fn(),
   disconnectAppSocket: jest.fn(),

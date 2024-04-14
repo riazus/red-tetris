@@ -5,7 +5,7 @@ import { MdLeaderboard } from "react-icons/md";
 import { Provider } from "react-redux";
 import App from "./App";
 import { store } from "./app/store";
-import NavBar from "./components/NavBar";
+import NavBar from "./components/NavBar/NavBar";
 import "./index.css";
 
 const container = document.getElementById("root");
