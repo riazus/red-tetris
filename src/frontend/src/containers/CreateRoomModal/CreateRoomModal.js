@@ -1,35 +1,31 @@
 import { Input, Modal } from "antd";
-import React, { useEffect, useState } from "react";
-import { useCreateRoomMutation } from "../../app/api/api";
+import React, { useState } from "react";
+import { useCreateRoom } from "./useCreateRoom";
 
 function CreateRoomModal({ isOpen, onRequestClose }) {
   const [roomName, setRoomName] = useState("");
   const [isSolo, setIsSolo] = useState(false);
-  const [
-    createRoom,
-    { data: createRoomResp, isSuccess: isCreateRoomSuccess, reset },
-  ] = useCreateRoomMutation();
+  const { createRoom, reset } = useCreateRoom();
 
-  useEffect(() => {
-    if (isCreateRoomSuccess) {
-      const { valid, message } = createRoomResp;
+  const handleCreateRoom = async () => {
+    const { valid, message } = await createRoom({ roomName, isSolo });
 
-      if (!valid) {
-        console.log(message);
-      } else {
-        reset();
-        setRoomName("");
-        setIsSolo(false);
-        onRequestClose();
-      }
+    if (!valid) {
+      console.log(message);
+      return;
     }
-  }, [isCreateRoomSuccess, createRoomResp, onRequestClose, reset]);
+
+    reset();
+    setRoomName("");
+    setIsSolo(false);
+    onRequestClose();
+  };
 
   return (
     <Modal
       open={isOpen}
       title={"Create Room"}
-      onOk={() => createRoom({ roomName, isSolo })}
+      onOk={handleCreateRoom}
       okText="Create"
       onCancel={onRequestClose}
     >

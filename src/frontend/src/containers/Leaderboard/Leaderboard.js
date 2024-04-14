@@ -1,8 +1,8 @@
 import { Flex, Table } from "antd";
-import { useGetLeaderboardQuery } from "../../app/api/api";
+import { useGetLeaderboard } from "./useGetLeaderboard";
 
 function Leaderboard() {
-  const { data, isLoading } = useGetLeaderboardQuery();
+  const { data, isLoading } = useGetLeaderboard();
 
   return (
     <Flex vertical align="center">
@@ -12,6 +12,7 @@ function Leaderboard() {
       ) : (
         data && (
           <Table
+            data-testid="leaderboard-data"
             columns={[
               { title: "Player Name", dataIndex: "username" },
               { title: "Score", dataIndex: "score" },
