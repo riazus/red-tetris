@@ -3,13 +3,26 @@ import { Provider } from "react-redux";
 import { store } from "../../app/store";
 import Leaderboard from "./Leaderboard";
 
-it("should have link to home", () => {
-  render(
-    <Provider store={store}>
-      <Leaderboard />
-    </Provider>
-  );
+const { useGetLeaderboardQuery } = jest.requireMock("../../app/api/api");
 
-  expect(screen.getByRole("link")).toBeInTheDocument();
-  expect(screen.getByText(/Go to Home/i)).toBeInTheDocument();
+describe("Leaderboard", () => {
+  beforeEach(() => {
+    useGetLeaderboardQuery.mockClear();
+  });
+
+  it("should render loading text while data is fetching", () => {
+    useGetLeaderboardQuery.mockReturnValueOnce({
+      data: undefined,
+      isLoading: true,
+      isSuccess: false,
+    });
+
+    render(
+      <Provider store={store}>
+        <Leaderboard />
+      </Provider>
+    );
+
+    expect(screen.getByText(/Loading/i)).toBeInTheDocument();
+  });
 });

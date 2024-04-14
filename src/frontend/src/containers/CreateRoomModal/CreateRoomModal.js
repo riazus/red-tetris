@@ -30,6 +30,7 @@ function CreateRoomModal({ isOpen, onRequestClose }) {
       open={isOpen}
       title={"Create Room"}
       onOk={() => createRoom({ roomName, isSolo })}
+      okText="Create"
       onCancel={onRequestClose}
     >
       <label>

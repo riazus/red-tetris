@@ -1,56 +1,167 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import gameReducer from "../../app/slices/gameSlice";
-import userReducer from "../../app/slices/playerSlice";
 import { store } from "../../app/store";
-import GameRoomForm from "./GameRoom";
+import { SOCKETS } from "../../const";
+import { gameListeners } from "../../sockets/listeners/gameListeners";
+import { emitAppSocketEvent } from "../../sockets/socket";
+import GameRoom from "./GameRoom";
 
-jest.mock("../../sockets/socket.js", () => {
-  return { emitAppSocketEvent: jest.fn() };
-});
+jest.mock("../../sockets/socket.js", () => ({ emitAppSocketEvent: jest.fn() }));
 
-jest.mock("../../sockets/listeners/gameListeners.js", () => {
-  const gameListeners = jest.fn();
-  const removeGameListeners = jest.fn();
+jest.mock("../../sockets/listeners/gameListeners.js", () => ({
+  gameListeners: jest.fn(),
+  removeGameListeners: jest.fn(),
+}));
 
-  return {
-    gameListeners,
-    removeGameListeners,
-  };
-});
+jest.mock(
+  "../Tetris/Tetris",
+  () =>
+    function Tetris() {
+      return <p>Tetris</p>;
+    }
+);
+jest.mock(
+  "../SaveScoreModal/SaveScoreModal",
+  () =>
+    function SaveScoreModal({ isOpen, setIsOpen }) {
+      return isOpen ? (
+        <p>SaveScoreModal is open</p>
+      ) : (
+        <p>SaveScoreModal is closed</p>
+      );
+    }
+);
 
-it("should have exit room button", () => {
-  const testStore = configureStore({
-    reducer: { player: userReducer, game: gameReducer },
-    preloadedState: {
-      player: {
-        isAdmin: true,
-      },
-      game: {
-        isGameover: true,
-        isStarted: true,
-        players: [],
-      },
-    },
+describe("GameRoom", () => {
+  it("should subscribe to events on mounting stage", () => {
+    render(
+      <Provider store={store}>
+        <GameRoom />
+      </Provider>
+    );
+
+    expect(gameListeners).toHaveBeenCalled();
   });
 
-  render(
-    <Provider store={testStore}>
-      <GameRoomForm />
-    </Provider>
-  );
+  it("should emit enter to the room event on mounting stage", async () => {
+    render(
+      <Provider store={store}>
+        <GameRoom roomName={"test-roomName"} />
+      </Provider>
+    );
 
-  expect(screen.getByTestId("exit-room-button")).toBeInTheDocument();
-});
+    await waitFor(() =>
+      expect(emitAppSocketEvent).toHaveBeenCalledWith(SOCKETS.ENTER_ROOM, {
+        roomName: "test-roomName",
+      })
+    );
+  });
 
-it("should display room name and player name", () => {
-  render(
-    <Provider store={store}>
-      <GameRoomForm playerName={"test-name"} roomName={"test-room"} />
-    </Provider>
-  );
+  it("should render game in solo mode game", () => {
+    const testStore = configureStore({
+      reducer: { game: gameReducer },
+      preloadedState: {
+        game: {
+          isStarted: true,
+          isSolo: true,
+        },
+      },
+    });
 
-  expect(screen.getByText(/test-name/i)).toBeInTheDocument();
-  expect(screen.getByText(/test-room/i)).toBeInTheDocument();
+    render(
+      <Provider store={testStore}>
+        <GameRoom />
+      </Provider>
+    );
+
+    expect(screen.getByText(/Tetris/i)).toBeInTheDocument();
+  });
+
+  it("should render game in multiplayer mode game", () => {
+    const testStore = configureStore({
+      reducer: { game: gameReducer },
+      preloadedState: {
+        game: {
+          isStarted: true,
+          isSolo: false,
+          players: [{}],
+        },
+      },
+    });
+
+    render(
+      <Provider store={testStore}>
+        <GameRoom />
+      </Provider>
+    );
+
+    expect(screen.getByText(/Tetris/i)).toBeInTheDocument();
+  });
+
+  it("should render waiting text", () => {
+    const testStore = configureStore({
+      reducer: { game: gameReducer },
+      preloadedState: {
+        game: {
+          isStarted: false,
+          isSolo: false,
+          players: [{}],
+        },
+      },
+    });
+
+    render(
+      <Provider store={testStore}>
+        <GameRoom />
+      </Provider>
+    );
+
+    expect(
+      screen.getByText(/Waiting for second player.../i)
+    ).toBeInTheDocument();
+  });
+
+  it("should open dialog on gameover", () => {
+    const testStore = configureStore({
+      reducer: { game: gameReducer },
+      preloadedState: {
+        game: {
+          isStarted: true,
+          isSolo: true,
+          isGameover: true,
+        },
+      },
+    });
+
+    render(
+      <Provider store={testStore}>
+        <GameRoom />
+      </Provider>
+    );
+
+    expect(screen.getByText(/SaveScoreModal is open/i)).toBeInTheDocument();
+  });
+
+  it("should dialog be closed while game session", () => {
+    const testStore = configureStore({
+      reducer: { game: gameReducer },
+      preloadedState: {
+        game: {
+          isStarted: true,
+          isSolo: true,
+          isGameover: false,
+        },
+      },
+    });
+
+    render(
+      <Provider store={testStore}>
+        <GameRoom />
+      </Provider>
+    );
+
+    expect(screen.getByText(/SaveScoreModal is closed/i)).toBeInTheDocument();
+  });
 });

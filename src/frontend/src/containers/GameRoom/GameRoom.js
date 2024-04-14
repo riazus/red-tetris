@@ -10,7 +10,7 @@ import { emitAppSocketEvent } from "../../sockets/socket";
 import SaveScoreModal from "../SaveScoreModal/SaveScoreModal";
 import Tetris from "../Tetris/Tetris";
 
-function GameRoomForm({ roomName }) {
+function GameRoom({ roomName }) {
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { isStarted, isGameover, players, isSolo } = useSelector(
@@ -33,7 +33,7 @@ function GameRoomForm({ roomName }) {
     };
   }, [dispatch, roomName]);
 
-  const renderGame = isStarted && (isSolo ? true : players.length === 1);
+  const renderGame = isStarted && (isSolo || players.length === 1);
 
   return (
     <Flex title="Game Room">
@@ -49,4 +49,4 @@ function GameRoomForm({ roomName }) {
   );
 }
 
-export default GameRoomForm;
+export default GameRoom;

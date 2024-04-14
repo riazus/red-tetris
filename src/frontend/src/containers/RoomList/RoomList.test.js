@@ -5,8 +5,6 @@ import RoomList from "./RoomList";
 
 const { useGetAvailableRoomsQuery } = jest.requireMock("../../app/api/api");
 
-//jest.mock("../../app/api/api/useGetAvailableRoomsQuery");
-
 describe("RoomList", () => {
   beforeEach(() => {
     useGetAvailableRoomsQuery.mockClear();

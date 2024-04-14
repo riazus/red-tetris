@@ -3,13 +3,15 @@ import { Provider } from "react-redux";
 import { store } from "../../app/store";
 import UsernameForm from "./UsernameForm";
 
-it("should have textbox input", () => {
-  render(
-    <Provider store={store}>
-      <UsernameForm />
-    </Provider>
-  );
+describe("UsernameForm", () => {
+  it("should render textbox and submit button", () => {
+    render(
+      <Provider store={store}>
+        <UsernameForm />
+      </Provider>
+    );
 
-  expect(screen.getByRole("textbox")).toBeInTheDocument();
-  expect(screen.getByRole("button")).toBeInTheDocument();
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(screen.getByRole("button")).toBeInTheDocument();
+  });
 });

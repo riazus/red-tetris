@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
+import GameRoom from "../containers/GameRoom/GameRoom";
 import Home from "../containers/Home/Home";
-import GameRoomForm from "../containers/GameRoom/GameRoom";
 
 function HashRouter({ router }) {
   const [currElement, setCurrElement] = useState(<Home />);
@@ -23,7 +23,7 @@ function HashRouter({ router }) {
         if (params) {
           element = {
             href: ":roomName[:playerName]",
-            element: <GameRoomForm roomName={params.roomName} />,
+            element: <GameRoom roomName={params.roomName} />,
           };
         }
       } else {

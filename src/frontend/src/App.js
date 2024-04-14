@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import HashRouter from "./components/HashRouter";
-import GameRoomForm from "./containers/GameRoom/GameRoom";
+import GameRoom from "./containers/GameRoom/GameRoom";
 import Home from "./containers/Home/Home";
 import Leaderboard from "./containers/Leaderboard/Leaderboard";
 import {
@@ -20,7 +20,7 @@ const router = [
   },
   {
     href: ":roomName[:playerName]",
-    element: <GameRoomForm />,
+    element: <GameRoom />,
   },
 ];
 

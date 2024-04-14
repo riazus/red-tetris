@@ -1,5 +1,5 @@
 import { Modal } from "antd";
-import Title from "antd/es/typography/Title";
+import Title from "antd/lib/typography/Title";
 import { useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { SOCKETS } from "../../const";

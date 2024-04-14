@@ -1,36 +1,38 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import React from "react";
 import { Provider } from "react-redux";
 import App from "./App";
-import userReducer from "./app/slices/playerSlice";
 import { store } from "./app/store";
+import {
+  connectAppSocket,
+  disconnectAppSocket,
+  initializeAppSocket,
+} from "./sockets/socket";
 
-it("should have home page text", () => {
-  render(
-    <Provider store={store}>
-      <App />
-    </Provider>
-  );
+jest.mock(
+  "./components/HashRouter",
+  () =>
+    function HashRouter({ router }) {
+      return <p>Router...</p>;
+    }
+);
 
-  expect(screen.getByText(/home page/i)).toBeInTheDocument();
-});
+jest.mock("./sockets/socket", () => ({
+  connectAppSocket: jest.fn(),
+  disconnectAppSocket: jest.fn(),
+  initializeAppSocket: jest.fn(),
+}));
 
-it("should show greeting text and two link while username is not empty", () => {
-  const testStore = configureStore({
-    reducer: { player: userReducer },
-    preloadedState: {
-      player: {
-        username: "test-username",
-      },
-    },
+describe("App", () => {
+  it("should connect to the socket while mounting", () => {
+    render(
+      <Provider store={store}>
+        <App />
+      </Provider>
+    );
+
+    expect(initializeAppSocket).toHaveBeenCalled();
+    expect(connectAppSocket).toHaveBeenCalled();
+    expect(disconnectAppSocket).not.toHaveBeenCalled();
   });
-
-  render(
-    <Provider store={testStore}>
-      <App />
-    </Provider>
-  );
-
-  expect(screen.getByText(/hello, test-username/i)).toBeInTheDocument();
 });
