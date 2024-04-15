@@ -22,15 +22,15 @@ export const useGameStatus = (rowsCleared) => {
     );
   };
 
-  const calcScore = useCallback(() => {
+  const calcScore = useCallback((rowsCleared) => {
     if (rowsCleared > 0) {
       handleUpdateScore(score + linePoints[rowsCleared - 1] * (level + 1));
       setRows((prev) => prev + rowsCleared);
     }
-  }, [level, linePoints, rowsCleared]);
+  }, [level, linePoints]);
 
   useEffect(() => {
-    calcScore();
+    calcScore(rowsCleared);
   }, [calcScore, rowsCleared]);
 
   return [rows, setRows, level, setLevel];
