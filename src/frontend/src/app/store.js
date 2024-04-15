@@ -9,4 +9,6 @@ export const store = configureStore({
     player: userReducer,
     game: gameReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat([api.middleware]),
 });

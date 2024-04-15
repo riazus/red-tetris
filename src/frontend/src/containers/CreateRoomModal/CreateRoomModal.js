@@ -8,7 +8,7 @@ function CreateRoomModal({ isOpen, onRequestClose }) {
   const { createRoom, reset } = useCreateRoom();
 
   const handleCreateRoom = async () => {
-    const { valid, message } = await createRoom({ roomName, isSolo });
+    const { valid, message } = await createRoom({ roomName, isSolo }).unwrap();
 
     if (!valid) {
       console.log(message);

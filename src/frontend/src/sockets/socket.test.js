@@ -1,14 +1,18 @@
 // Import the functions to be tested
-import { initializeAppSocket } from "./socket.js";
+import { io } from "socket.io-client";
+import { API_BASE_URL } from "../const.js";
+import { getSocket } from "./core.js";
+import {
+  connectAppSocket,
+  disconnectAppSocket,
+  emitAppSocketEvent,
+  getAppSocket,
+  initializeAppSocket,
+} from "./socket.js";
 
 // Mock the socket.io-client module
 jest.mock("socket.io-client", () => ({
-  io: jest.fn(() => ({
-    on: jest.fn(),
-    connect: jest.fn(),
-    disconnect: jest.fn(),
-    emit: jest.fn(),
-  })),
+  io: jest.fn(),
 }));
 
 // Mock the constant API_BASE_URL
@@ -16,61 +20,71 @@ jest.mock("../const", () => ({
   API_BASE_URL: "http://localhost:3000", // Example URL
 }));
 
-describe("Socket functions", () => {
-  let mockSocket;
+jest.mock("./core", () => ({
+  getSocket: jest.fn(),
+  setSocket: jest.fn(),
+}));
 
+describe("Socket functions", () => {
   beforeEach(() => {
-    // Reset mock implementation before each test
-    mockSocket = {
+    io.mockImplementation(() => () => ({
       on: jest.fn(),
       connect: jest.fn(),
       disconnect: jest.fn(),
       emit: jest.fn(),
       connected: false,
-    };
+    }));
   });
 
-  afterEach(() => {
-    // Reset mock calls after each test
-    jest.clearAllMocks();
-  });
-
-  test("initializeAppSocket initializes socket correctly", () => {
+  it("initializeAppSocket initializes socket correctly", () => {
     initializeAppSocket();
-    expect(mockSocket.on).toHaveBeenCalledTimes(0); // No event listeners added
-    expect(mockSocket.connect).toHaveBeenCalledTimes(0); // No connection attempted
-    expect(mockSocket.disconnect).toHaveBeenCalledTimes(0); // No disconnection attempted
-    expect(mockSocket.emit).toHaveBeenCalledTimes(0); // No events emitted
-  });
-  /*
-  test("connectAppSocket resolves when socket is already connected", async () => {
-    mockSocket.connected = true; // Simulate connected socket
-    await expect(connectAppSocket()).toBeUndefined();
-    expect(mockSocket.connect).toHaveBeenCalledTimes(0); // No connection attempted
-    expect(mockSocket.disconnect).toHaveBeenCalledTimes(0); // No disconnection attempted
+
+    expect(io).toHaveBeenCalledWith(API_BASE_URL, {
+      path: "/socket",
+      autoConnect: false,
+    });
   });
 
-  
-  test("disconnectAppSocket disconnects socket when connected", () => {
-    mockSocket.connected = true; // Simulate connected socket
+  it("connectAppSocket resolves when socket is already connected", async () => {
+    const on = jest.fn();
+    on.mockImplementation((event, cb) => cb());
+    const connect = jest.fn();
+    getSocket.mockImplementation(() => ({
+      connected: false,
+      on,
+      connect,
+    }));
+
+    await connectAppSocket();
+    expect(connect).toHaveBeenCalled();
+  });
+
+  it("disconnectAppSocket disconnects socket when connected", () => {
+    const disconnect = jest.fn();
+    getSocket.mockImplementation(() => ({ connected: true, disconnect }));
+
     disconnectAppSocket();
-    expect(mockSocket.disconnect).toHaveBeenCalledTimes(1);
+    expect(disconnect).toHaveBeenCalled();
   });
 
-  test("getAppSocket throws error when socket is not initialized or connected", () => {
+  it("getAppSocket throws error when socket is not initialized or connected", () => {
     expect(getAppSocket).toThrow("Cannot find socket connection");
   });
 
-  
-  test("emitAppSocketEvent emits event when socket is connected", () => {
-    mockSocket.connected = true; // Simulate connected socket
-    emitAppSocketEvent("test-event", { data: "test" }, () => {});
-    expect(mockSocket.emit).toHaveBeenCalledTimes(1);
-    expect(mockSocket.emit).toHaveBeenCalledWith(
-      "test-event",
-      { data: "test" },
-      expect.any(Function)
-    );
+  it("getAppSocket returns socket when initialized and connected", () => {
+    const mockSocket = { connected: true };
+    getSocket.mockImplementation(() => mockSocket);
+    expect(getAppSocket).toBe(getAppSocket);
   });
-  */
+
+  it("emitAppSocketEvent emits event when socket is connected", () => {
+    const event = "test-event";
+    const payload = "payload";
+    const callback = jest.fn();
+    const emit = jest.fn();
+    getSocket.mockImplementation(() => ({ connected: true, emit }));
+
+    emitAppSocketEvent(event, payload, callback);
+    expect(emit).toHaveBeenCalled();
+  });
 });

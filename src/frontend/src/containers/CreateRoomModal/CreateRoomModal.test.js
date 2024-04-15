@@ -12,7 +12,10 @@ jest.mock("./useCreateRoom", () => ({
 describe("CreateRoomModal", () => {
   beforeEach(() => {
     useCreateRoom.mockImplementation(() => ({
-      createRoom: jest.fn(() => ({ valid: true, message: "" })),
+      createRoom: jest.fn(() => ({
+        valid: true,
+        message: "",
+      })),
       reset: jest.fn(),
     }));
   });
@@ -65,6 +68,9 @@ describe("CreateRoomModal", () => {
 
     const promise = Promise.resolve({ valid: true, message: "" });
     const createRoom = jest.fn(() => promise);
+    createRoom.mockImplementation(() => ({
+      unwrap: () => ({ valid: true, message: "" }),
+    }));
     const reset = jest.fn();
     useCreateRoom.mockImplementation(() => ({ createRoom, reset }));
 
@@ -96,6 +102,12 @@ describe("CreateRoomModal", () => {
       message: "test invalid room",
     });
     const createRoom = jest.fn(() => promise);
+    createRoom.mockImplementation(() => ({
+      unwrap: () => ({
+        valid: false,
+        message: "call create room with invalid args",
+      }),
+    }));
     const reset = jest.fn();
     useCreateRoom.mockImplementation(() => ({ createRoom, reset }));
 

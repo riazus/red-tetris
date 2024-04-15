@@ -1,17 +1,21 @@
 import { io } from "socket.io-client";
 import { API_BASE_URL } from "../const";
+import { getSocket, setSocket } from "./core";
 
-let appSocket;
+// export let appSocket;
 
 export const initializeAppSocket = () => {
-  if (!appSocket) {
-    appSocket = io(API_BASE_URL, { path: "/socket", autoConnect: false });
+  const socket = getSocket();
+  if (!socket) {
+    const newSocket = io(API_BASE_URL, { path: "/socket", autoConnect: false });
+    setSocket(newSocket);
+    return newSocket;
   }
-  return appSocket;
 };
 
 export const connectAppSocket = () => {
   return new Promise((resolve, reject) => {
+    const appSocket = getSocket();
     if (appSocket && !appSocket.connected) {
       appSocket.on("connect", () => {
         resolve();
@@ -29,12 +33,14 @@ export const connectAppSocket = () => {
 };
 
 export const disconnectAppSocket = () => {
+  const appSocket = getSocket();
   if (appSocket && appSocket.connected) {
     appSocket.disconnect();
   }
 };
 
 export const getAppSocket = () => {
+  const appSocket = getSocket();
   if (!appSocket || !appSocket.connected) {
     throw new Error("Cannot find socket connection");
   }

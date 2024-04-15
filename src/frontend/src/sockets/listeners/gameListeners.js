@@ -75,7 +75,6 @@ export const gameListeners = (dispatch) => {
 
 export const removeGameListeners = () => {
   const socket = getAppSocket();
-  if (!socket) return;
 
   socket.off(SOCKETS.ADD_ROOM_PLAYER);
   socket.off(SOCKETS.DELETE_ROOM_PLAYER);
