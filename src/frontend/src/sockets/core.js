@@ -1,5 +1,5 @@
-let socket;
+let _socket;
 
-export const getSocket = () => socket;
+export const getSocket = () => _socket;
 
-export const setSocket = (newSocket) => (socket = newSocket);
+export const setSocket = (socket) => (_socket = socket);
