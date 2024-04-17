@@ -18,6 +18,8 @@ import { clearRoom } from "../../app/slices/gameSlice";
 import GameButton from "../../components/GameButton";
 import Stage from "../../components/Stage";
 import useNavigate from "../../hooks/useNavigate";
+import Typography from "antd/es/typography/Typography";
+import { Flex } from "antd";
 
 const Tetris = () => {
   const [dropTime, setDropTime] = useState(null);
@@ -26,6 +28,7 @@ const Tetris = () => {
     isGameover: playerLose,
     score,
     isAdmin,
+    username,
   } = useSelector((root) => root.player);
   const dispatch = useDispatch();
 
@@ -123,58 +126,83 @@ const Tetris = () => {
   const isRestartBtnEnable = isGameover && isStarted && isAdmin;
 
   return (
-    <>
-      <StyledTetrisWrapper
+    <Flex justify="space-between">
+      <div
         role="button"
         tabIndex="0"
         onKeyDown={(e) => move(e)}
         onKeyUp={keyUp}
       >
-        <StyledTetris>
+      <Flex>
+        <Flex vertical>
+          <Typography
+            style={{
+              textAlign: "center",
+            }}
+          >
+            {username}
+          </Typography>
           <Stage stage={stage} />
-          <aside>
-            {isGameover ? (
-              <h1>Game Over</h1>
-            ) : (
-              <Table
-                columns={[
-                  { title: "Score", dataIndex: "score" },
-                  { title: "Rows", dataIndex: "rows" },
-                  { title: "Level", dataIndex: "level" },
-                ]}
-                dataSource={[
-                  {
-                    key: "1",
-                    score,
-                    rows,
-                    level,
-                  },
-                ]}
-                bordered={true}
-                pagination={false}
-                style={{ marginTop: 30 }}
-              />
-            )}
-            <GameButton
-              text={"Exit from Room"}
-              callback={handleExit}
-              testid={"exit-room-button"}
+        </Flex>
+        <Flex vertical justify="center">
+          {isGameover ? (
+            <h1>Game Over</h1>
+          ) : (
+            <Table
+              columns={[
+                { title: "Score", dataIndex: "score", align: "center" },
+                { title: "Rows", dataIndex: "rows", align: "center" },
+                { title: "Level", dataIndex: "level", align: "center" },
+              ]}
+              dataSource={[
+                {
+                  key: "1",
+                  score,
+                  rows,
+                  level,
+                },
+              ]}
+              bordered={true}
+              pagination={false}
+              style={{ marginTop: 8 }}
             />
-            {isRestartBtnEnable && (
-              <GameButton
-                text={"Restart Game"}
-                callback={handleRestartGame}
-                testid={"restart-game-button"}
-              />
-            )}
-          </aside>
-        </StyledTetris>
+          )}
+          <p></p>
+          <GameButton
+            text={"Exit from Room"}
+            callback={handleExit}
+            testid={"exit-room-button"}
+          />
+          <p></p>
+          {isRestartBtnEnable && (
+            <GameButton
+              text={"Restart Game"}
+              callback={handleRestartGame}
+              testid={"restart-game-button"}
+            />
+          )}
+        </Flex>
+
         {players.map(
-          ({ spectrum }, i) =>
-            spectrum && <Stage key={i} stage={spectrum}></Stage>
+          ({ username, spectrum }, i) =>
+            spectrum && (
+              <Flex vertical justify="right">
+                <Typography
+                  style={{
+                    textAlign: "center",
+                    marginBottom: "10px",
+                    marginTop: "10px",
+                  }}
+                >
+                  {players[0].username}
+                </Typography>
+                <Stage key={i} stage={spectrum}></Stage>
+              </Flex>
+            )
         )}
-      </StyledTetrisWrapper>
-    </>
+        </Flex>
+      </div>
+    </Flex>
   );
 };
 

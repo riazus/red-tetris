@@ -20,7 +20,7 @@ import { Game } from "./models/Game.js";
 import { Player, players } from "./models/Player.js";
 import { Room } from "./models/Room.js";
 
-const PORT = process.env.BACKEND_PORT || 5000;
+const PORT = process.env.BACKEND_PORT || 8000;
 
 const app = express();
 const server = createServer(app);
