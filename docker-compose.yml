@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  # ------------------------------------------------------------
+  # NodeJS + Sqlite3 - Backend
+  # ------------------------------------------------------------
+  backend:
+    container_name: backend
+    build:
+      context: ./src/backend
+    hostname: backend
+    environment:
+      BACKEND_PORT: ${BACKEND_PORT}
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+    volumes:
+      - ./src/backend/src:/usr/src/app/src
+    networks:
+      - redtetris-network
+    restart: unless-stopped
+
+  # ------------------------------------------------------------
+  # React 18 - Frontend
+  # ------------------------------------------------------------
+  frontend:
+    container_name: frontend
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile.prod
+    environment:
+      FRONTEND_PORT: ${FRONTEND_PORT}
+    ports:
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+    depends_on:
+      - backend
+    volumes:
+      - ./src/frontend/src:/usr/src/app/src
+    networks:
+      - redtetris-network
+    restart: unless-stopped
+
+networks:
+  redtetris-network:
+    driver: bridge
