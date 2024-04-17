@@ -11,7 +11,6 @@ import { useStage } from "../../hooks/useStage";
 import { emitAppSocketEvent } from "../../sockets/socket";
 
 import { Flex } from "antd";
-import Typography from "antd/es/typography/Typography";
 import { clearRoom } from "../../app/slices/gameSlice";
 import GameButton from "../../components/GameButton";
 import Stage from "../../components/Stage";
@@ -125,13 +124,13 @@ const Tetris = () => {
     <Flex justify="space-between">
       <Flex>
         <Flex vertical>
-          <Typography
+          <p
             style={{
               textAlign: "center",
             }}
           >
             {username}
-          </Typography>
+          </p>
           <div
             role="button"
             tabIndex="0"
@@ -184,7 +183,7 @@ const Tetris = () => {
           ({ username, spectrum }, i) =>
             spectrum && (
               <Flex vertical justify="right">
-                <Typography
+                <p
                   style={{
                     textAlign: "center",
                     marginBottom: "10px",
@@ -192,7 +191,7 @@ const Tetris = () => {
                   }}
                 >
                   {username}
-                </Typography>
+                </p>
                 <Stage key={i} stage={spectrum}></Stage>
               </Flex>
             )

@@ -1,4 +1,4 @@
-import { Button, Input } from "antd";
+import { Button, Flex, Input } from "antd";
 import { useState } from "react";
 import { useCreateUser } from "./useCreateUser";
 
@@ -13,16 +13,18 @@ function UsernameForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Input
-        placeholder="Username"
-        value={username}
-        onChange={(e) =>
-          inputValid(e.target.value) && setUsername(e.target.value)
-        }
-      />
-      <Button type="primary" htmlType="submit">
-        Submit
-      </Button>
+      <Flex justify="right">
+        <Input
+          placeholder="Username"
+          value={username}
+          onChange={(e) =>
+            inputValid(e.target.value) && setUsername(e.target.value)
+          }
+        />
+        <Button type="primary" htmlType="submit" style={{ marginLeft: 10 }}>
+          Submit
+        </Button>
+      </Flex>
     </form>
   );
 }
