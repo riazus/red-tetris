@@ -7,6 +7,7 @@ const initialState = {
   isSolo: false,
   isStarted: false,
   isGameover: false,
+  isWaiting: false,
 };
 
 export const gameSlice = createSlice({
@@ -60,6 +61,9 @@ export const gameSlice = createSlice({
     setTetrominos: (state, action) => {
       state.tetrominos = action.payload;
     },
+    setIsWaiting: (state, action) => {
+      state.isWaiting = action.payload;
+    },
   },
 });
 
@@ -78,4 +82,5 @@ export const {
   clearRoom,
   restartGame,
   setTetrominos,
+  setIsWaiting
 } = gameSlice.actions;

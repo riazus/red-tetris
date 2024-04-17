@@ -5,6 +5,7 @@ import {
   setIsGameover,
   setIsSolo,
   setIsStarted,
+  setIsWaiting,
   setRoomPlayers,
   setTetrominos,
   updatePlayersGameover,
@@ -15,8 +16,8 @@ import {
   restartPlayerGame,
   setIsAdmin,
   setIsWinner,
-  setRoomName,
   setIsGameover as setPlayerGameover,
+  setRoomName,
 } from "../../app/slices/playerSlice";
 import { SOCKETS } from "../../const";
 import { getAppSocket } from "../socket";
@@ -31,6 +32,9 @@ export const gameListeners = (dispatch) => {
       dispatch(setRoomName(roomName));
       dispatch(setIsSolo(isSolo));
       dispatch(setRoomPlayers(roomPlayers));
+      if (!isSolo) {
+        dispatch(setIsWaiting(true));
+      }
     }
   );
 
@@ -47,6 +51,7 @@ export const gameListeners = (dispatch) => {
     dispatch(setTetrominos(tetrominos));
     dispatch(setIsGameover(false));
     dispatch(setPlayerGameover(false));
+    dispatch(setIsWaiting(false));
   });
 
   socket.on(SOCKETS.RESTART_GAME, ({ isAdmin, players }) => {

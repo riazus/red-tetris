@@ -2,10 +2,6 @@ import { Table } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { exitRoom, setIsGameover } from "../../app/slices/playerSlice";
-import {
-  StyledTetris,
-  StyledTetrisWrapper,
-} from "../../components/styles/StyledTetris";
 import { SOCKETS } from "../../const";
 import { checkCollision, createStage } from "../../gameHelpers";
 import { useGameStatus } from "../../hooks/useGameStatus";
@@ -14,12 +10,12 @@ import { usePlayer } from "../../hooks/usePlayer";
 import { useStage } from "../../hooks/useStage";
 import { emitAppSocketEvent } from "../../sockets/socket";
 
+import { Flex } from "antd";
+import Typography from "antd/es/typography/Typography";
 import { clearRoom } from "../../app/slices/gameSlice";
 import GameButton from "../../components/GameButton";
 import Stage from "../../components/Stage";
 import useNavigate from "../../hooks/useNavigate";
-import Typography from "antd/es/typography/Typography";
-import { Flex } from "antd";
 
 const Tetris = () => {
   const [dropTime, setDropTime] = useState(null);
@@ -127,12 +123,6 @@ const Tetris = () => {
 
   return (
     <Flex justify="space-between">
-      <div
-        role="button"
-        tabIndex="0"
-        onKeyDown={(e) => move(e)}
-        onKeyUp={keyUp}
-      >
       <Flex>
         <Flex vertical>
           <Typography
@@ -142,7 +132,14 @@ const Tetris = () => {
           >
             {username}
           </Typography>
-          <Stage stage={stage} />
+          <div
+            role="button"
+            tabIndex="0"
+            onKeyDown={(e) => move(e)}
+            onKeyUp={keyUp}
+          >
+            <Stage stage={stage} />
+          </div>
         </Flex>
         <Flex vertical justify="center">
           {isGameover ? (
@@ -194,14 +191,13 @@ const Tetris = () => {
                     marginTop: "10px",
                   }}
                 >
-                  {players[0].username}
+                  {username}
                 </Typography>
                 <Stage key={i} stage={spectrum}></Stage>
               </Flex>
             )
         )}
-        </Flex>
-      </div>
+      </Flex>
     </Flex>
   );
 };
